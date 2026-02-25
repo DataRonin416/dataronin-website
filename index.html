@@ -1,0 +1,1352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Data Ronin — AI Strategy & Automation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Noto+Serif+JP:wght@300;400&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ─── TOKENS ─────────────────────────────────────────────────── */
+    :root {
+      --washi:      #F5F1E8;
+      --washi-dark: #EDE8DA;
+      --sumi:       #141210;
+      --ink-soft:   #3A3530;
+      --ink-muted:  #7A7268;
+      --prussian:   #1C3D6B;
+      --prussian-lt:#2B5BA8;
+      --vermillion: #B83A2C;
+      --sage:       #4B5D52;
+      --gold:       #8A6F3A;
+
+      --serif-display: 'Cormorant', Georgia, serif;
+      --serif-body:    'Crimson Pro', Georgia, serif;
+      --serif-jp:      'Noto Serif JP', serif;
+
+      --max-w: 1100px;
+      --col:   680px;
+    }
+
+    /* ─── RESET ──────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--washi);
+      color: var(--sumi);
+      font-family: var(--serif-body);
+      font-size: 19px;
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+
+    /* ─── PAPER TEXTURE ──────────────────────────────────────────── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 1000;
+      opacity: 0.6;
+    }
+
+    /* ─── SVG INK WASH ───────────────────────────────────────────── */
+    .ink-wash {
+      position: absolute;
+      pointer-events: none;
+    }
+
+    /* ─── NAVIGATION ─────────────────────────────────────────────── */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 900;
+      padding: 24px 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(245, 241, 232, 0.88);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(20,18,16,0.08);
+      animation: fadeDown 0.8s ease both;
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      text-decoration: none;
+    }
+
+    .nav-logo-mark {
+      font-family: var(--serif-jp);
+      font-size: 22px;
+      color: var(--vermillion);
+      letter-spacing: 0.05em;
+    }
+
+    .nav-logo-text {
+      font-family: var(--serif-display);
+      font-size: 20px;
+      font-weight: 500;
+      color: var(--sumi);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 40px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-family: var(--serif-display);
+      font-size: 13px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+      text-decoration: none;
+      position: relative;
+      transition: color 0.3s;
+    }
+
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -3px;
+      left: 0;
+      width: 0;
+      height: 1px;
+      background: var(--vermillion);
+      transition: width 0.3s ease;
+    }
+
+    .nav-links a:hover { color: var(--prussian); }
+    .nav-links a:hover::after { width: 100%; }
+
+    .nav-cta {
+      font-family: var(--serif-display);
+      font-size: 13px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--washi) !important;
+      background: var(--prussian);
+      padding: 10px 22px;
+      text-decoration: none;
+      transition: background 0.3s !important;
+    }
+    .nav-cta:hover { background: var(--prussian-lt) !important; }
+    .nav-cta::after { display: none !important; }
+
+    /* ─── HERO ───────────────────────────────────────────────────── */
+    .hero {
+      min-height: 100vh;
+      position: relative;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
+      overflow: hidden;
+      padding-top: 80px;
+    }
+
+    /* Diagonal Hokusai-inspired wave element */
+    .hero-canvas {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      padding: 80px 48px 80px 80px;
+      animation: fadeRight 1s 0.3s ease both;
+    }
+
+    .hero-kana {
+      font-family: var(--serif-jp);
+      font-size: 13px;
+      letter-spacing: 0.3em;
+      color: var(--vermillion);
+      text-transform: uppercase;
+      margin-bottom: 32px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .hero-kana::before {
+      content: '';
+      width: 40px;
+      height: 1px;
+      background: var(--vermillion);
+    }
+
+    h1 {
+      font-family: var(--serif-display);
+      font-size: clamp(52px, 6vw, 88px);
+      font-weight: 300;
+      line-height: 1.05;
+      color: var(--sumi);
+      letter-spacing: -0.02em;
+      margin-bottom: 32px;
+    }
+
+    h1 em {
+      font-style: italic;
+      color: var(--prussian);
+    }
+
+    .hero-body {
+      font-size: 20px;
+      line-height: 1.65;
+      color: var(--ink-soft);
+      max-width: 480px;
+      margin-bottom: 48px;
+      font-weight: 300;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+    }
+
+    .btn-primary {
+      font-family: var(--serif-display);
+      font-size: 14px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--washi);
+      background: var(--prussian);
+      padding: 16px 36px;
+      text-decoration: none;
+      transition: background 0.3s, transform 0.2s;
+      display: inline-block;
+    }
+
+    .btn-primary:hover {
+      background: var(--sumi);
+      transform: translateY(-1px);
+    }
+
+    .btn-ghost {
+      font-family: var(--serif-display);
+      font-size: 14px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--prussian);
+      text-decoration: none;
+      border-bottom: 1px solid var(--prussian);
+      padding-bottom: 2px;
+      transition: color 0.3s, border-color 0.3s;
+    }
+
+    .btn-ghost:hover {
+      color: var(--vermillion);
+      border-color: var(--vermillion);
+    }
+
+    .hero-right {
+      position: relative;
+      z-index: 2;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeLeft 1s 0.5s ease both;
+    }
+
+    .hero-wave-wrap {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      right: 0;
+      top: 0;
+    }
+
+    /* ─── SECTION BASE ───────────────────────────────────────────── */
+    section {
+      position: relative;
+    }
+
+    .container {
+      max-width: var(--max-w);
+      margin: 0 auto;
+      padding: 0 48px;
+    }
+
+    .section-label {
+      font-family: var(--serif-jp);
+      font-size: 11px;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: var(--vermillion);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .section-label::after {
+      content: '';
+      flex: 1;
+      max-width: 60px;
+      height: 1px;
+      background: var(--vermillion);
+      opacity: 0.6;
+    }
+
+    h2 {
+      font-family: var(--serif-display);
+      font-size: clamp(36px, 4vw, 58px);
+      font-weight: 300;
+      line-height: 1.1;
+      letter-spacing: -0.01em;
+      color: var(--sumi);
+    }
+
+    h3 {
+      font-family: var(--serif-display);
+      font-size: 26px;
+      font-weight: 400;
+      color: var(--sumi);
+      margin-bottom: 12px;
+    }
+
+    p { color: var(--ink-soft); }
+
+    /* ─── MANIFESTO ──────────────────────────────────────────────── */
+    .manifesto {
+      padding: 140px 0;
+      border-top: 1px solid rgba(20,18,16,0.1);
+    }
+
+    .manifesto-inner {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 80px;
+      align-items: start;
+    }
+
+    .manifesto-left {
+      position: sticky;
+      top: 120px;
+    }
+
+    .manifesto-jp {
+      font-family: var(--serif-jp);
+      font-size: 48px;
+      color: var(--ink-muted);
+      opacity: 0.25;
+      line-height: 1.2;
+      margin-top: 24px;
+      writing-mode: vertical-rl;
+      text-orientation: mixed;
+    }
+
+    .manifesto-text h2 {
+      margin-bottom: 40px;
+    }
+
+    .manifesto-text p {
+      font-size: 21px;
+      line-height: 1.75;
+      color: var(--ink-soft);
+      margin-bottom: 28px;
+      font-weight: 300;
+    }
+
+    .manifesto-text p strong {
+      color: var(--prussian);
+      font-weight: 600;
+    }
+
+    /* ─── SERVICES (Flutter card grid) ──────────────────────────── */
+    .services {
+      padding: 120px 0;
+      background: var(--washi-dark);
+      border-top: 1px solid rgba(20,18,16,0.08);
+      border-bottom: 1px solid rgba(20,18,16,0.08);
+    }
+
+    .services-header {
+      margin-bottom: 72px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+      align-items: end;
+    }
+
+    .services-header p {
+      font-size: 20px;
+      line-height: 1.6;
+      font-weight: 300;
+    }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+    }
+
+    .card {
+      background: var(--washi);
+      padding: 48px 40px;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.3s ease;
+      cursor: default;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 3px;
+      height: 0;
+      background: var(--prussian);
+      transition: height 0.4s ease;
+    }
+
+    .card:hover::before { height: 100%; }
+    .card:hover { transform: translateY(-4px); }
+
+    .card-number {
+      font-family: var(--serif-display);
+      font-size: 72px;
+      font-weight: 300;
+      color: var(--prussian);
+      opacity: 0.08;
+      line-height: 1;
+      position: absolute;
+      top: 20px;
+      right: 24px;
+    }
+
+    .card-icon {
+      width: 44px;
+      height: 44px;
+      margin-bottom: 28px;
+    }
+
+    .card p {
+      font-size: 16px;
+      line-height: 1.65;
+      font-weight: 300;
+    }
+
+    /* Card spanning */
+    .card--wide {
+      grid-column: span 2;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+    }
+
+    /* ─── PROCESS / SCROLL NARRATIVE ────────────────────────────── */
+    .process {
+      padding: 140px 0;
+    }
+
+    .process-header {
+      margin-bottom: 80px;
+    }
+
+    .process-steps {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+    }
+
+    .step {
+      padding: 60px 48px;
+      border-top: 1px solid rgba(20,18,16,0.1);
+      position: relative;
+    }
+
+    .step:nth-child(odd) { border-right: 1px solid rgba(20,18,16,0.1); }
+
+    .step-n {
+      font-family: var(--serif-display);
+      font-size: 11px;
+      letter-spacing: 0.3em;
+      color: var(--vermillion);
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+
+    .step p { font-size: 17px; font-weight: 300; line-height: 1.7; margin-top: 12px; }
+
+    /* ─── WORK / PORTFOLIO ───────────────────────────────────────── */
+    .work {
+      padding: 120px 0;
+      background: var(--sumi);
+      overflow: hidden;
+    }
+
+    .work .section-label { color: var(--vermillion); }
+    .work h2 { color: var(--washi); margin-bottom: 64px; }
+
+    .work-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3px;
+    }
+
+    .work-item {
+      position: relative;
+      overflow: hidden;
+      aspect-ratio: 4/3;
+      background: #1E1C1A;
+      cursor: pointer;
+    }
+
+    .work-item--tall { aspect-ratio: 3/4; }
+
+    .work-item-bg {
+      position: absolute;
+      inset: 0;
+      transition: transform 0.6s ease;
+    }
+
+    .work-item:hover .work-item-bg { transform: scale(1.04); }
+
+    /* Woodblock-print inspired palette fills */
+    .work-item:nth-child(1) .work-item-bg {
+      background: linear-gradient(135deg, #1C3D6B 0%, #0D2444 60%, #8B1A1A 100%);
+    }
+    .work-item:nth-child(2) .work-item-bg {
+      background: linear-gradient(160deg, #2D4A2A 0%, #1A2D18 50%, #1C3D6B 100%);
+    }
+    .work-item:nth-child(3) .work-item-bg {
+      background: linear-gradient(120deg, #4A3520 0%, #2A1E0E 60%, #6B4C1C 100%);
+    }
+    .work-item:nth-child(4) .work-item-bg {
+      background: linear-gradient(140deg, #1C3D6B 20%, #2D4A2A 80%);
+    }
+
+    /* SVG pattern overlays per card */
+    .work-item-pattern {
+      position: absolute;
+      inset: 0;
+      opacity: 0.12;
+    }
+
+    .work-item-content {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 36px 36px 32px;
+      background: linear-gradient(to top, rgba(14,12,10,0.85) 0%, transparent 100%);
+    }
+
+    .work-tag {
+      font-family: var(--serif-jp);
+      font-size: 11px;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--vermillion);
+      margin-bottom: 8px;
+    }
+
+    .work-item h3 {
+      font-size: 22px;
+      color: var(--washi);
+      margin-bottom: 0;
+    }
+
+    .work-item p {
+      color: rgba(245,241,232,0.55);
+      font-size: 15px;
+      margin-top: 6px;
+    }
+
+    /* ─── INDUSTRIES ─────────────────────────────────────────────── */
+    .industries {
+      padding: 120px 0;
+      border-top: 1px solid rgba(20,18,16,0.08);
+    }
+
+    .industries-inner {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 80px;
+      align-items: start;
+    }
+
+    .industries-left {
+      position: sticky;
+      top: 120px;
+    }
+
+    .industries-left h2 { margin-bottom: 24px; }
+    .industries-left p { font-size: 18px; font-weight: 300; line-height: 1.65; }
+
+    .industry-list {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1px;
+      background: rgba(20,18,16,0.08);
+    }
+
+    .industry-item {
+      background: var(--washi);
+      padding: 36px 32px;
+      position: relative;
+    }
+
+    .industry-item::before {
+      content: '';
+      position: absolute;
+      top: 36px;
+      left: 0;
+      width: 3px;
+      height: 0;
+      background: var(--vermillion);
+      transition: height 0.3s ease;
+    }
+
+    .industry-item:hover::before { height: calc(100% - 72px); }
+
+    .industry-icon {
+      font-family: var(--serif-jp);
+      font-size: 28px;
+      color: var(--prussian);
+      opacity: 0.4;
+      margin-bottom: 16px;
+    }
+
+    .industry-item h4 {
+      font-family: var(--serif-display);
+      font-size: 20px;
+      font-weight: 500;
+      margin-bottom: 8px;
+      color: var(--sumi);
+    }
+
+    .industry-item p { font-size: 15px; line-height: 1.6; font-weight: 300; }
+
+    /* ─── ABOUT STRIP ────────────────────────────────────────────── */
+    .about {
+      padding: 160px 0;
+      background: var(--prussian);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .about-ink {
+      position: absolute;
+      right: -100px;
+      top: -80px;
+      width: 600px;
+      height: 600px;
+      opacity: 0.06;
+    }
+
+    .about-inner {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 100px;
+      align-items: center;
+      position: relative;
+      z-index: 2;
+    }
+
+    .about .section-label { color: rgba(245,241,232,0.5); }
+    .about .section-label::after { background: rgba(245,241,232,0.3); }
+
+    .about h2 {
+      color: var(--washi);
+      font-size: clamp(36px, 4vw, 54px);
+      margin-bottom: 36px;
+    }
+
+    .about p {
+      color: rgba(245,241,232,0.7);
+      font-size: 20px;
+      line-height: 1.75;
+      font-weight: 300;
+      margin-bottom: 24px;
+    }
+
+    .about-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+    }
+
+    .stat {
+      border-top: 1px solid rgba(245,241,232,0.15);
+      padding-top: 24px;
+    }
+
+    .stat-n {
+      font-family: var(--serif-display);
+      font-size: 52px;
+      font-weight: 300;
+      color: var(--washi);
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+
+    .stat-n em {
+      font-style: normal;
+      color: var(--vermillion);
+      font-size: 32px;
+    }
+
+    .stat-label {
+      font-family: var(--serif-jp);
+      font-size: 12px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(245,241,232,0.45);
+    }
+
+    /* ─── CTA ────────────────────────────────────────────────────── */
+    .cta {
+      padding: 160px 0;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cta-bg {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 60% 80% at 50% 100%, rgba(28,61,107,0.06) 0%, transparent 70%);
+    }
+
+    .cta h2 {
+      font-size: clamp(44px, 6vw, 80px);
+      line-height: 1.05;
+      max-width: 700px;
+      margin: 0 auto 20px;
+    }
+
+    .cta h2 em {
+      font-style: italic;
+      color: var(--prussian);
+    }
+
+    .cta-sub {
+      font-size: 20px;
+      color: var(--ink-muted);
+      margin: 0 auto 56px;
+      max-width: 500px;
+      font-weight: 300;
+    }
+
+    .cta-divider {
+      width: 1px;
+      height: 80px;
+      background: linear-gradient(to bottom, transparent, var(--prussian), transparent);
+      margin: 0 auto 56px;
+    }
+
+    /* ─── FOOTER ─────────────────────────────────────────────────── */
+    footer {
+      border-top: 1px solid rgba(20,18,16,0.1);
+      padding: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .footer-logo {
+      font-family: var(--serif-display);
+      font-size: 16px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--ink-muted);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .footer-seal {
+      font-family: var(--serif-jp);
+      font-size: 18px;
+      color: var(--vermillion);
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 36px;
+      list-style: none;
+    }
+
+    .footer-links a {
+      font-family: var(--serif-display);
+      font-size: 12px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--ink-muted);
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+
+    .footer-links a:hover { color: var(--prussian); }
+
+    .footer-copy {
+      font-size: 13px;
+      color: var(--ink-muted);
+      font-family: var(--serif-display);
+      letter-spacing: 0.05em;
+    }
+
+    /* ─── ANIMATIONS ─────────────────────────────────────────────── */
+    @keyframes fadeDown {
+      from { opacity: 0; transform: translateY(-16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeRight {
+      from { opacity: 0; transform: translateX(-32px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+
+    @keyframes fadeLeft {
+      from { opacity: 0; transform: translateX(32px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(40px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes drawLine {
+      from { stroke-dashoffset: 1000; }
+      to   { stroke-dashoffset: 0; }
+    }
+
+    @keyframes waveMove {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50%       { transform: translateY(-8px) rotate(0.5deg); }
+    }
+
+    @keyframes inkBloom {
+      from { opacity: 0; transform: scale(0.92); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+
+    .fade-up {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+
+    .fade-up.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .wave-anim {
+      animation: waveMove 8s ease-in-out infinite;
+    }
+
+    /* ─── RESPONSIVE ─────────────────────────────────────────────── */
+    @media (max-width: 900px) {
+      nav { padding: 20px 24px; }
+      .nav-links { display: none; }
+      .hero { grid-template-columns: 1fr; }
+      .hero-right { display: none; }
+      .hero-content { padding: 60px 24px; }
+      .container { padding: 0 24px; }
+      .manifesto-inner, .about-inner, .industries-inner { grid-template-columns: 1fr; }
+      .card-grid { grid-template-columns: 1fr; }
+      .card--wide { grid-column: span 1; grid-template-columns: 1fr; }
+      .work-grid { grid-template-columns: 1fr; }
+      .process-steps { grid-template-columns: 1fr; }
+      .step:nth-child(odd) { border-right: none; }
+      .industry-list { grid-template-columns: 1fr; }
+      .about-stats { grid-template-columns: 1fr; }
+      footer { flex-direction: column; gap: 32px; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ═══ NAVIGATION ═══════════════════════════════════════════════ -->
+  <nav>
+    <a href="#" class="nav-logo">
+      <span class="nav-logo-mark">浪</span>
+      <span class="nav-logo-text">Data Ronin</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="#services">Services</a></li>
+      <li><a href="#work">Work</a></li>
+      <li><a href="#about">About</a></li>
+      <li><a href="#contact" class="nav-cta">Engage</a></li>
+    </ul>
+  </nav>
+
+  <!-- ═══ HERO ══════════════════════════════════════════════════════ -->
+  <section class="hero">
+    <!-- Hokusai-inspired wave SVG -->
+    <svg class="hero-wave-wrap" viewBox="0 0 800 900" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+      <defs>
+        <linearGradient id="wg1" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:#1C3D6B;stop-opacity:0.12"/>
+          <stop offset="100%" style="stop-color:#2B5BA8;stop-opacity:0.04"/>
+        </linearGradient>
+        <linearGradient id="wg2" x1="100%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" style="stop-color:#B83A2C;stop-opacity:0.06"/>
+          <stop offset="100%" style="stop-color:#B83A2C;stop-opacity:0"/>
+        </linearGradient>
+        <filter id="ink" x="-20%" y="-20%" width="140%" height="140%">
+          <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="3" result="noise"/>
+          <feDisplacementMap in="SourceGraphic" in2="noise" scale="8" result="displaced"/>
+          <feGaussianBlur in="displaced" stdDeviation="1.5"/>
+        </filter>
+      </defs>
+
+      <!-- Background field -->
+      <rect width="800" height="900" fill="url(#wg1)"/>
+
+      <!-- Great Wave form — Hokusai-inspired curves -->
+      <g class="wave-anim" filter="url(#ink)" opacity="0.9">
+        <!-- Main wave crest -->
+        <path d="M-50 420 Q100 280 200 340 Q280 390 340 280 Q420 160 520 240 Q620 320 700 200 Q760 140 850 180 L850 900 L-50 900 Z"
+              fill="url(#wg1)" opacity="0.8"/>
+        <!-- Secondary wave -->
+        <path d="M-50 560 Q80 480 180 520 Q260 550 320 460 Q400 360 480 420 Q560 480 640 360 Q700 300 850 340 L850 900 L-50 900 Z"
+              fill="url(#wg1)" opacity="0.5"/>
+        <!-- Wave foam details -->
+        <path d="M100 340 Q120 300 160 320" stroke="#1C3D6B" stroke-width="1.5" fill="none" opacity="0.2" stroke-linecap="round"/>
+        <path d="M300 290 Q330 250 370 270" stroke="#1C3D6B" stroke-width="1.5" fill="none" opacity="0.2" stroke-linecap="round"/>
+        <path d="M520 250 Q550 210 590 230" stroke="#1C3D6B" stroke-width="1.5" fill="none" opacity="0.2" stroke-linecap="round"/>
+      </g>
+
+      <!-- Hiroshige-style atmospheric layering lines -->
+      <g opacity="0.06">
+        <line x1="-50" y1="650" x2="900" y2="560" stroke="#1C3D6B" stroke-width="0.5"/>
+        <line x1="-50" y1="680" x2="900" y2="595" stroke="#1C3D6B" stroke-width="0.5"/>
+        <line x1="-50" y1="710" x2="900" y2="630" stroke="#1C3D6B" stroke-width="0.5"/>
+        <line x1="-50" y1="740" x2="900" y2="665" stroke="#1C3D6B" stroke-width="0.5"/>
+        <line x1="-50" y1="770" x2="900" y2="700" stroke="#1C3D6B" stroke-width="0.5"/>
+        <line x1="-50" y1="800" x2="900" y2="735" stroke="#1C3D6B" stroke-width="0.5"/>
+      </g>
+
+      <!-- Sesshū-style ink splash forms -->
+      <g filter="url(#ink)" opacity="0.07">
+        <ellipse cx="620" cy="200" rx="120" ry="80" fill="#1C3D6B"/>
+        <ellipse cx="680" cy="240" rx="60" ry="40" fill="#1A1410"/>
+        <circle cx="580" cy="180" r="30" fill="#1C3D6B"/>
+      </g>
+
+      <!-- Seal stamp mark -->
+      <g transform="translate(680, 720)" opacity="0.15">
+        <rect x="-28" y="-28" width="56" height="56" fill="none" stroke="#B83A2C" stroke-width="2"/>
+        <text x="0" y="10" font-family="serif" font-size="28" fill="#B83A2C" text-anchor="middle">浪</text>
+      </g>
+
+      <!-- Mount Fuji silhouette (Hokusai reference) — subtle -->
+      <path d="M350 900 L500 500 L650 900 Z" fill="#1C3D6B" opacity="0.04"/>
+      <path d="M420 900 L500 540 L580 900 Z" fill="white" opacity="0.02"/>
+    </svg>
+
+    <div class="hero-content">
+      <div class="hero-kana">AI Strategy &amp; Automation</div>
+      <h1>
+        Data is the<br/>
+        new <em>bushidō.</em>
+      </h1>
+      <p class="hero-body">
+        We build AI-powered systems for businesses navigating uncharted terrain — 
+        from intelligent automation to full-stack digital strategy.
+      </p>
+      <div class="hero-actions">
+        <a href="#services" class="btn-primary">Explore Services</a>
+        <a href="#work" class="btn-ghost">View Work</a>
+      </div>
+    </div>
+
+    <div class="hero-right"></div>
+  </section>
+
+  <!-- ═══ MANIFESTO ═════════════════════════════════════════════════ -->
+  <section class="manifesto">
+    <div class="container">
+      <div class="manifesto-inner">
+        <div class="manifesto-left">
+          <div class="section-label">Manifesto</div>
+          <div class="manifesto-jp">浪人<br/>データ</div>
+        </div>
+        <div class="manifesto-text fade-up">
+          <h2>The unaffiliated<br/>warrior has<br/><em>no master</em><br/>but the work.</h2>
+          <p style="margin-top:40px">
+            A ronin serves no lord. We serve your outcomes. <strong>Data Ronin</strong> is an AI consultancy built for the unglamorous, high-stakes work of making intelligent automation actually function in the real world.
+          </p>
+          <p>
+            We don't sell dashboards. We don't sell hype. We architect <strong>workflows that replace hours with seconds</strong> — for restaurants, engineers, construction firms, and anyone drowning in data they can't yet use.
+          </p>
+          <p>
+            Our weapon is <strong>Make.com + Google Cloud AI</strong>, wielded with the precision of a tradesman and the strategy of a management consultant.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ SERVICES ══════════════════════════════════════════════════ -->
+  <section class="services" id="services">
+    <div class="container">
+      <div class="services-header">
+        <div>
+          <div class="section-label">Disciplines</div>
+          <h2>What we<br/>build.</h2>
+        </div>
+        <p class="fade-up">
+          Turnkey AI systems for businesses that need more than a chatbot. 
+          Every engagement begins with operations thinking, not technology thinking.
+        </p>
+      </div>
+
+      <div class="card-grid">
+
+        <div class="card fade-up">
+          <div class="card-number">01</div>
+          <svg class="card-icon" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="4" y="4" width="36" height="36" stroke="#1C3D6B" stroke-width="1.5"/>
+            <path d="M12 22 L22 12 L32 22 L22 32 Z" stroke="#1C3D6B" stroke-width="1.5" fill="none"/>
+            <circle cx="22" cy="22" r="3" fill="#B83A2C"/>
+          </svg>
+          <h3>AI Automation Workflows</h3>
+          <p>End-to-end process automation using Make.com, integrating AI models into your existing operational stack without rebuilding everything from scratch.</p>
+        </div>
+
+        <div class="card fade-up" style="transition-delay:0.1s">
+          <div class="card-number">02</div>
+          <svg class="card-icon" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="22" cy="22" r="18" stroke="#1C3D6B" stroke-width="1.5"/>
+            <path d="M22 8 L22 36M8 22 L36 22" stroke="#1C3D6B" stroke-width="1"/>
+            <path d="M14 14 Q22 18 30 14M14 30 Q22 26 30 30" stroke="#B83A2C" stroke-width="1" fill="none"/>
+          </svg>
+          <h3>Document Intelligence</h3>
+          <p>AI extraction and analysis from geotechnical reports, contracts, and technical PDFs. Transform unstructured text into structured, actionable data.</p>
+        </div>
+
+        <div class="card fade-up" style="transition-delay:0.2s">
+          <div class="card-number">03</div>
+          <svg class="card-icon" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M8 36 L8 16 L22 8 L36 16 L36 36 Z" stroke="#1C3D6B" stroke-width="1.5" fill="none"/>
+            <path d="M16 36 L16 26 L28 26 L28 36" stroke="#1C3D6B" stroke-width="1" fill="none"/>
+            <line x1="14" y1="20" x2="30" y2="20" stroke="#B83A2C" stroke-width="1"/>
+          </svg>
+          <h3>Restaurant & Food Service Tech</h3>
+          <p>Branding, social automation, and operational systems for restaurants, food trucks, and catering businesses — delivered as turnkey packages.</p>
+        </div>
+
+        <div class="card card--wide fade-up" style="transition-delay:0.15s">
+          <div>
+            <div class="card-number">04</div>
+            <svg class="card-icon" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="6" y="10" width="32" height="24" rx="1" stroke="#1C3D6B" stroke-width="1.5" fill="none"/>
+              <path d="M14 22 L19 17 L24 22 L30 16" stroke="#B83A2C" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+              <circle cx="30" cy="16" r="2" fill="#B83A2C"/>
+            </svg>
+            <h3>Strategy & AI Consulting</h3>
+            <p>We map your operations before we write a single automation. Process analysis, ROI modeling, and phased roadmaps that justify every dollar of AI investment.</p>
+          </div>
+          <div style="display:flex;flex-direction:column;justify-content:flex-end;padding-bottom:4px">
+            <div style="border-left:2px solid rgba(28,61,107,0.12);padding-left:28px">
+              <p style="font-size:15px;color:var(--ink-muted);font-weight:300;line-height:1.65">
+                "The best automation is one your team will actually use. We spend 40% of every engagement on change management before we build anything."
+              </p>
+              <p style="font-size:13px;font-family:var(--serif-display);letter-spacing:0.1em;text-transform:uppercase;color:var(--prussian);margin-top:16px">
+                — Data Ronin Principle
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="card fade-up" style="transition-delay:0.25s">
+          <div class="card-number">05</div>
+          <svg class="card-icon" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M22 6 L38 16 L38 28 L22 38 L6 28 L6 16 Z" stroke="#1C3D6B" stroke-width="1.5" fill="none"/>
+            <path d="M22 14 L30 19 L30 25 L22 30 L14 25 L14 19 Z" stroke="#1C3D6B" stroke-width="1" fill="none"/>
+            <circle cx="22" cy="22" r="2.5" fill="#B83A2C"/>
+          </svg>
+          <h3>Custom AI Application Build</h3>
+          <p>Full-stack AI applications from prototype to production — Gemini 2.5 Pro, Claude, GPT-4 — integrated with your web presence and business systems.</p>
+        </div>
+
+        <div class="card fade-up" style="transition-delay:0.3s">
+          <div class="card-number">06</div>
+          <svg class="card-icon" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="8" y="8" width="12" height="12" stroke="#1C3D6B" stroke-width="1.5" fill="none"/>
+            <rect x="24" y="8" width="12" height="12" stroke="#1C3D6B" stroke-width="1.5" fill="none"/>
+            <rect x="8" y="24" width="12" height="12" stroke="#B83A2C" stroke-width="1.5" fill="none"/>
+            <rect x="24" y="24" width="12" height="12" stroke="#1C3D6B" stroke-width="1.5" fill="none"/>
+          </svg>
+          <h3>Branding & Identity Systems</h3>
+          <p>Visual systems engineered for AI-native companies — logos, design tokens, HTML templates, and documentation that scale with your product.</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ PROCESS ════════════════════════════════════════════════════ -->
+  <section class="process">
+    <div class="container">
+      <div class="process-header">
+        <div class="section-label">Method</div>
+        <h2>How the work<br/>gets done.</h2>
+      </div>
+      <div class="process-steps">
+        <div class="step fade-up">
+          <div class="step-n">01 — Reconnoiter</div>
+          <h3>Map the terrain</h3>
+          <p>We spend time in your operations before proposing anything. Data flows, bottlenecks, time costs, existing tools — we document what's actually happening, not what should be.</p>
+        </div>
+        <div class="step fade-up" style="transition-delay:0.1s">
+          <div class="step-n">02 — Architect</div>
+          <h3>Design the system</h3>
+          <p>Blueprint the automation. Select the right AI model for each task. Define inputs, outputs, edge cases. Produce a technical spec that your team can verify before build begins.</p>
+        </div>
+        <div class="step fade-up" style="transition-delay:0.05s">
+          <div class="step-n">03 — Build</div>
+          <h3>Construct with precision</h3>
+          <p>Iterative builds with visibility at each stage. We don't disappear for six weeks and resurface with a demo. Weekly checkpoints, shared logs, real feedback loops.</p>
+        </div>
+        <div class="step fade-up" style="transition-delay:0.15s">
+          <div class="step-n">04 — Deploy</div>
+          <h3>Launch and sustain</h3>
+          <p>Go-live with documentation, training, and a 30-day support window. Systems are built to be maintained by your team — not held hostage to our continued involvement.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ WORK ══════════════════════════════════════════════════════ -->
+  <section class="work" id="work">
+    <div class="container">
+      <div class="section-label">Selected Work</div>
+      <h2>Recent<br/>engagements.</h2>
+    </div>
+    <div class="container" style="padding-top:0;margin-top:0">
+      <div class="work-grid" style="margin-top:48px">
+
+        <div class="work-item">
+          <div class="work-item-bg">
+            <!-- Hiroshige atmospheric lines -->
+            <svg width="100%" height="100%" viewBox="0 0 600 450" class="work-item-pattern" preserveAspectRatio="xMidYMid slice">
+              <defs>
+                <pattern id="lines1" x="0" y="0" width="600" height="20" patternUnits="userSpaceOnUse">
+                  <line x1="0" y1="10" x2="600" y2="8" stroke="white" stroke-width="0.5"/>
+                </pattern>
+              </defs>
+              <rect width="600" height="450" fill="url(#lines1)" opacity="0.4"/>
+              <path d="M0 450 L300 120 L600 450 Z" fill="white" opacity="0.04"/>
+            </svg>
+          </div>
+          <div class="work-item-content">
+            <div class="work-tag">Geotechnical AI</div>
+            <h3>Venditti Engineering PVR Tool</h3>
+            <p>Automated soil analysis & pile verification reporting</p>
+          </div>
+        </div>
+
+        <div class="work-item work-item--tall">
+          <div class="work-item-bg">
+            <svg width="100%" height="100%" viewBox="0 0 400 533" class="work-item-pattern" preserveAspectRatio="xMidYMid slice">
+              <circle cx="200" cy="200" r="150" stroke="white" stroke-width="0.5" fill="none" opacity="0.3"/>
+              <circle cx="200" cy="200" r="100" stroke="white" stroke-width="0.5" fill="none" opacity="0.3"/>
+              <circle cx="200" cy="200" r="50" stroke="white" stroke-width="0.5" fill="none" opacity="0.3"/>
+            </svg>
+          </div>
+          <div class="work-item-content">
+            <div class="work-tag">Restaurant Tech</div>
+            <h3>Food Truck Brand & Automation Suite</h3>
+            <p>Identity system + social AI + operational workflows</p>
+          </div>
+        </div>
+
+        <div class="work-item">
+          <div class="work-item-bg">
+            <svg width="100%" height="100%" viewBox="0 0 600 450" class="work-item-pattern" preserveAspectRatio="xMidYMid slice">
+              <path d="M0 200 Q150 100 300 200 Q450 300 600 200" stroke="white" stroke-width="0.8" fill="none" opacity="0.4"/>
+              <path d="M0 250 Q150 150 300 250 Q450 350 600 250" stroke="white" stroke-width="0.8" fill="none" opacity="0.3"/>
+              <path d="M0 300 Q150 200 300 300 Q450 400 600 300" stroke="white" stroke-width="0.8" fill="none" opacity="0.2"/>
+            </svg>
+          </div>
+          <div class="work-item-content">
+            <div class="work-tag">Document Intelligence</div>
+            <h3>Geotechnical Report Parser</h3>
+            <p>Gemini 2.5 Pro extraction pipeline for soil borings</p>
+          </div>
+        </div>
+
+        <div class="work-item">
+          <div class="work-item-bg">
+            <svg width="100%" height="100%" viewBox="0 0 600 450" class="work-item-pattern" preserveAspectRatio="xMidYMid slice">
+              <rect x="50" y="50" width="200" height="200" stroke="white" stroke-width="0.5" fill="none" opacity="0.3"/>
+              <rect x="100" y="100" width="200" height="200" stroke="white" stroke-width="0.5" fill="none" opacity="0.3"/>
+              <rect x="150" y="150" width="200" height="200" stroke="white" stroke-width="0.5" fill="none" opacity="0.3"/>
+              <rect x="200" y="200" width="200" height="200" stroke="white" stroke-width="0.5" fill="none" opacity="0.3"/>
+            </svg>
+          </div>
+          <div class="work-item-content">
+            <div class="work-tag">Brand Identity</div>
+            <h3>AI Agency Visual System</h3>
+            <p>Complete identity + HTML report templates + design tokens</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ INDUSTRIES ════════════════════════════════════════════════ -->
+  <section class="industries">
+    <div class="container">
+      <div class="industries-inner">
+        <div class="industries-left">
+          <div class="section-label">Sectors</div>
+          <h2>Where we<br/>operate.</h2>
+          <p style="margin-top:24px">
+            Deep operational experience in four verticals — and the discipline to say no to everything else.
+          </p>
+        </div>
+        <div class="industry-list fade-up">
+          <div class="industry-item">
+            <div class="industry-icon">建</div>
+            <h4>Construction & Engineering</h4>
+            <p>Geotechnical analysis, compliance bots, estimating automation, change order forensics, and field reporting intelligence.</p>
+          </div>
+          <div class="industry-item">
+            <div class="industry-icon">食</div>
+            <h4>Restaurant & Food Service</h4>
+            <p>Turnkey branding, social media automation, inventory intelligence, and customer engagement systems for independent operators.</p>
+          </div>
+          <div class="industry-item">
+            <div class="industry-icon">商</div>
+            <h4>Professional Services</h4>
+            <p>Document processing, client onboarding automation, proposal generation, and reporting pipelines for consultants and agencies.</p>
+          </div>
+          <div class="industry-item">
+            <div class="industry-icon">技</div>
+            <h4>AI-Native Startups</h4>
+            <p>Prototype-to-production builds, tech stack selection, AI integration strategy, and MVP delivery for early-stage ventures.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ ABOUT ══════════════════════════════════════════════════════ -->
+  <section class="about" id="about">
+    <svg class="about-ink" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <filter id="inkblob">
+          <feTurbulence type="fractalNoise" baseFrequency="0.02" numOctaves="4" result="noise"/>
+          <feDisplacementMap in="SourceGraphic" in2="noise" scale="40"/>
+          <feGaussianBlur stdDeviation="8"/>
+        </filter>
+      </defs>
+      <ellipse cx="250" cy="250" rx="200" ry="200" fill="white" filter="url(#inkblob)"/>
+    </svg>
+
+    <div class="container">
+      <div class="about-inner">
+        <div class="fade-up">
+          <div class="section-label">The Practice</div>
+          <h2>Built by a<br/>project manager<br/>who got tired of<br/><em>waiting</em> for<br/>developers.</h2>
+          <p>
+            Data Ronin was founded on the belief that operations experience is the missing ingredient in most AI implementations — not more engineering talent.
+          </p>
+          <p>
+            We're seasoned PMs and strategists who learned the tools, not developers who discovered strategy. That inversion matters.
+          </p>
+        </div>
+        <div class="about-stats fade-up" style="transition-delay:0.2s">
+          <div class="stat">
+            <div class="stat-n">10<em>K+</em></div>
+            <div class="stat-label">Operations hours analyzed</div>
+          </div>
+          <div class="stat">
+            <div class="stat-n">4<em>×</em></div>
+            <div class="stat-label">Average time savings delivered</div>
+          </div>
+          <div class="stat">
+            <div class="stat-n">3</div>
+            <div class="stat-label">Industries served deeply</div>
+          </div>
+          <div class="stat">
+            <div class="stat-n">0</div>
+            <div class="stat-label">Abandoned implementations</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ CTA ════════════════════════════════════════════════════════ -->
+  <section class="cta" id="contact">
+    <div class="cta-bg"></div>
+    <div class="container" style="text-align:center;position:relative;z-index:2">
+      <div class="section-label" style="justify-content:center;margin-bottom:40px">
+        <span>Begin</span>
+      </div>
+      <h2 class="fade-up">
+        Ready to move<br/>without a master?
+      </h2>
+      <p class="cta-sub fade-up" style="transition-delay:0.1s">
+        Tell us what you're trying to automate. We'll tell you if we can help — and if we can't, we'll tell you who can.
+      </p>
+      <div class="cta-divider"></div>
+      <div class="fade-up" style="transition-delay:0.2s;display:flex;gap:20px;justify-content:center;align-items:center">
+        <a href="/cdn-cgi/l/email-protection#86eee3eaeae9c6e2e7f2e7f4e9e8efe8a8e7ef" class="btn-primary"><span class="__cf_email__" data-cfemail="b9d1dcd5d5d6f9ddd8cdd8cbd6d7d0d797d8d0">[email&#160;protected]</span></a>
+        <span style="font-family:var(--serif-display);font-size:13px;letter-spacing:0.15em;text-transform:uppercase;color:var(--ink-muted)">or</span>
+        <a href="#" class="btn-ghost">Schedule a recon call</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ FOOTER ═════════════════════════════════════════════════════ -->
+  <footer>
+    <div class="footer-logo">
+      <span class="footer-seal">浪</span>
+      Data Ronin
+    </div>
+    <ul class="footer-links">
+      <li><a href="#services">Services</a></li>
+      <li><a href="#work">Work</a></li>
+      <li><a href="#about">About</a></li>
+      <li><a href="/cdn-cgi/l/email-protection#ea828f868685aa8e8b9e8b9885848384c48b83">Contact</a></li>
+    </ul>
+    <p class="footer-copy">© 2025 Data Ronin AI — dataronin.ai</p>
+  </footer>
+
+  <!-- ═══ SCRIPTS ════════════════════════════════════════════════════ -->
+  <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+    // Scroll reveal
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -60px 0px' });
+
+    document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+    // Stagger children in card grid
+    document.querySelectorAll('.card-grid .card').forEach((card, i) => {
+      card.style.transitionDelay = `${i * 
