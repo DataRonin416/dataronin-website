@@ -61,34 +61,50 @@ body{
 .loader-ronin{
   display:flex;flex-direction:column;align-items:center;gap:18px;
 }
-.loader-ronin svg{filter:drop-shadow(0 2px 8px rgba(16,15,24,0.15))}
-/* Sword practice animation — slow kata swing */
+.loader-ronin svg{filter:drop-shadow(0 4px 16px rgba(16,15,24,0.2));overflow:visible}
+/* Fierce sword slash — full overhead strike */
 .sword-arm{
-  transform-origin:112px 58px;
-  animation:kata-swing 2.4s ease-in-out infinite;
+  transform-origin:122px 58px;
+  animation:fierce-slash 1.6s cubic-bezier(.2,.8,.3,1) infinite;
 }
-@keyframes kata-swing{
-  0%{transform:rotate(0deg)}
-  30%{transform:rotate(-18deg)}
-  50%{transform:rotate(12deg)}
-  70%{transform:rotate(-6deg)}
-  100%{transform:rotate(0deg)}
+@keyframes fierce-slash{
+  0%{transform:rotate(20deg)}
+  15%{transform:rotate(30deg)}
+  35%{transform:rotate(-55deg)}
+  50%{transform:rotate(-50deg)}
+  70%{transform:rotate(10deg)}
+  100%{transform:rotate(20deg)}
 }
-.slash-arc{
-  animation:slash-flash 2.4s ease-in-out infinite;
+/* Triple slash arcs */
+.slash-arc{stroke-dasharray:80;stroke-dashoffset:80;opacity:0}
+.s1{animation:arc-slash 1.6s cubic-bezier(.2,.8,.3,1) infinite}
+.s2{animation:arc-slash 1.6s cubic-bezier(.2,.8,.3,1) .08s infinite}
+.s3{animation:arc-slash 1.6s cubic-bezier(.2,.8,.3,1) .15s infinite}
+@keyframes arc-slash{
+  0%,20%{opacity:0;stroke-dashoffset:80}
+  35%{opacity:1;stroke-dashoffset:0}
+  55%{opacity:0.6;stroke-dashoffset:0}
+  70%,100%{opacity:0;stroke-dashoffset:80}
 }
-@keyframes slash-flash{
-  0%,25%{opacity:0;stroke-dashoffset:60}
-  35%,50%{opacity:0.7;stroke-dashoffset:0}
-  65%,100%{opacity:0;stroke-dashoffset:60}
+/* Sparks burst on impact */
+.sparks{opacity:0;animation:spark-burst 1.6s ease-out infinite}
+@keyframes spark-burst{
+  0%,30%{opacity:0;transform:scale(0.5) translate(0,0)}
+  40%{opacity:1;transform:scale(1.3) translate(5px,-5px)}
+  55%{opacity:0.8;transform:scale(1) translate(8px,-3px)}
+  70%,100%{opacity:0;transform:scale(0.3) translate(15px,5px)}
 }
-.slash-arc{stroke-dasharray:60;stroke-dashoffset:60}
+/* Body lunge on each strike */
 .ronin-figure{
-  animation:ronin-breathe 3s ease-in-out infinite;
+  animation:ronin-lunge 1.6s cubic-bezier(.2,.8,.3,1) infinite;
 }
-@keyframes ronin-breathe{
-  0%,100%{transform:translateY(0)}
-  50%{transform:translateY(-2px)}
+@keyframes ronin-lunge{
+  0%{transform:translateX(0) translateY(0)}
+  15%{transform:translateX(-3px) translateY(-1px)}
+  35%{transform:translateX(6px) translateY(2px)}
+  50%{transform:translateX(4px) translateY(1px)}
+  70%{transform:translateX(-1px) translateY(-1px)}
+  100%{transform:translateX(0) translateY(0)}
 }
 .loader-word{
   font-family:var(--font-d);font-weight:800;font-size:17px;
@@ -524,36 +540,51 @@ footer{
 <!-- ══ LOADER ══════════════════════════════════════════════════ -->
 <div id="loader">
   <div class="loader-ronin">
-    <svg viewBox="0 0 200 220" width="180" xmlns="http://www.w3.org/2000/svg">
-      <!-- Ronin silhouette in sword practice stance -->
+    <svg viewBox="0 0 260 220" width="220" xmlns="http://www.w3.org/2000/svg">
+      <!-- Ronin in aggressive attack stance -->
       <g class="ronin-figure">
-        <!-- Head (straw hat / kasa) -->
-        <ellipse cx="100" cy="42" rx="22" ry="8" fill="var(--indigo)"/>
-        <ellipse cx="100" cy="40" rx="14" ry="12" fill="var(--indigo)"/>
-        <!-- Torso -->
-        <path d="M90,52 L86,100 L114,100 L110,52 Z" fill="var(--indigo)"/>
-        <!-- Hakama (wide pants) -->
-        <path d="M84,100 L72,170 L92,170 L100,120 L108,170 L128,170 L116,100 Z" fill="var(--indigo)"/>
-        <!-- Left arm (rear, holding sword hilt) -->
-        <path d="M88,58 L72,80 L76,82 L90,62 Z" fill="var(--indigo)"/>
-        <!-- Right arm (forward, extended with sword) -->
+        <!-- Head (kasa hat, tilted forward aggressively) -->
+        <ellipse cx="110" cy="38" rx="24" ry="9" fill="var(--indigo)" transform="rotate(-8,110,38)"/>
+        <ellipse cx="112" cy="36" rx="13" ry="11" fill="var(--indigo)"/>
+        <!-- Neck lean -->
+        <path d="M106,46 L108,54 L116,54 L118,46 Z" fill="var(--indigo)"/>
+        <!-- Torso — lunging forward -->
+        <path d="M98,54 L88,106 L126,106 L120,54 Z" fill="var(--indigo)" class="ronin-torso"/>
+        <!-- Gi collar opening -->
+        <path d="M104,54 L108,70 L112,54 Z" fill="var(--ember)" opacity="0.8"/>
+        <!-- Obi sash -->
+        <rect x="87" y="98" width="40" height="8" rx="2" fill="var(--ember)"/>
+        <!-- Hakama — wide aggressive stance -->
+        <path d="M86,106 L58,174 L82,174 L107,126 L132,174 L156,174 L128,106 Z" fill="var(--indigo)"/>
+        <!-- Left arm — pulled back, gripping hilt -->
+        <path d="M98,60 L74,82 L70,78 L72,72 L94,56 Z" fill="var(--indigo)"/>
+        <circle cx="70" cy="76" r="4" fill="var(--indigo)"/>
+        <!-- Right arm + sword — full overhead slash -->
         <g class="sword-arm">
-          <path d="M112,58 L132,76 L128,80 L110,62 Z" fill="var(--indigo)"/>
-          <!-- Hand -->
-          <circle cx="132" cy="78" r="4" fill="var(--indigo)"/>
-          <!-- Katana blade -->
-          <line class="katana-blade" x1="134" y1="74" x2="185" y2="26" stroke="var(--indigo)" stroke-width="2.5" stroke-linecap="round"/>
-          <!-- Tsuba (guard) -->
-          <ellipse cx="133" cy="76" rx="5" ry="2" fill="var(--ember)" transform="rotate(-42,133,76)"/>
+          <path d="M122,58 L148,44 L152,48 L126,64 Z" fill="var(--indigo)"/>
+          <circle cx="150" cy="46" r="4.5" fill="var(--indigo)"/>
+          <!-- Katana — long blade -->
+          <line x1="153" y1="42" x2="220" y2="-10" stroke="var(--indigo)" stroke-width="3" stroke-linecap="round"/>
+          <!-- Katana edge highlight -->
+          <line x1="154" y1="40" x2="218" y2="-8" stroke="var(--ember)" stroke-width="1" stroke-linecap="round" opacity="0.5"/>
+          <!-- Tsuba guard -->
+          <ellipse cx="151" cy="44" rx="6" ry="2.5" fill="var(--ember)" transform="rotate(-38,151,44)"/>
         </g>
-        <!-- Feet -->
-        <rect x="74" y="168" width="18" height="5" rx="2" fill="var(--indigo)"/>
-        <rect x="110" y="168" width="18" height="5" rx="2" fill="var(--indigo)"/>
-        <!-- Sash / obi -->
-        <rect x="85" y="96" width="30" height="8" rx="2" fill="var(--ember)"/>
+        <!-- Front foot — planted wide -->
+        <path d="M126,172 L158,174 L156,178 L124,176 Z" fill="var(--indigo)"/>
+        <!-- Rear foot — pushed back -->
+        <path d="M56,172 L80,174 L78,178 L54,176 Z" fill="var(--indigo)"/>
       </g>
-      <!-- Sword slash arc (animated) -->
-      <path class="slash-arc" d="M185,26 Q160,10 140,40" fill="none" stroke="var(--gold)" stroke-width="2" stroke-linecap="round" opacity="0"/>
+      <!-- Slash arcs — triple slash effect -->
+      <path class="slash-arc s1" d="M220,-10 Q180,-30 160,20" fill="none" stroke="var(--ember)" stroke-width="2.5" stroke-linecap="round"/>
+      <path class="slash-arc s2" d="M215,-5 Q190,-35 155,15" fill="none" stroke="var(--gold)" stroke-width="1.5" stroke-linecap="round"/>
+      <path class="slash-arc s3" d="M225,-8 Q175,-25 165,25" fill="none" stroke="var(--ember)" stroke-width="1" stroke-linecap="round" opacity="0.6"/>
+      <!-- Impact sparks -->
+      <g class="sparks">
+        <circle cx="210" cy="-5" r="2" fill="var(--ember)"/>
+        <circle cx="200" cy="5" r="1.5" fill="var(--gold)"/>
+        <circle cx="218" cy="2" r="1" fill="var(--ember)"/>
+      </g>
     </svg>
     <span class="loader-word">Data Ronin</span>
     <div class="loader-bar"><div class="loader-fill"></div></div>
@@ -600,7 +631,7 @@ footer{
   <!-- Austin skyline video background -->
   <div class="hero-video-wrap">
     <video class="austin-scene" autoplay muted loop playsinline>
-      <source src="austinskyline_lite.mp4" type="video/mp4">
+      <source src="austinskyline_web.mp4" type="video/mp4">
     </video>
   </div>
   <div class="hero-overlay"></div>
