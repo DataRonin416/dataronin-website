@@ -1,0 +1,23 @@
+# ── Environment / Secrets ──────────────────────────────────
+# NEVER commit .env — it contains API keys and credentials
+.env
+.env.local
+.env.*.local
+*.env
+
+# ── Node.js ────────────────────────────────────────────────
+node_modules/
+npm-debug.log*
+yarn-error.log*
+
+# ── OS / Editor ────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# ── Build / Output ─────────────────────────────────────────
+dist/
+build/
+*.log
+
