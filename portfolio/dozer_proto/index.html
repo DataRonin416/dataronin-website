@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DOZER — Earthworks Bid Automation</title>
+  <link rel="icon" type="image/svg+xml" href="assets/venditti_favicon.svg">
+  <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@800&family=Bricolage+Grotesque:wght@800&family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&family=DM+Sans:wght@300&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            hiviz: '#FF5100',
+            amber: '#FFB300',
+            'hiviz-dark': '#E54500',
+            charcoal: '#111111',
+            'dk-gray': '#222222',
+            'md-gray': '#333333',
+            'lt-gray': '#888888',
+            'border-gray': '#D0D0D0',
+            'surface': '#F5F5F0',
+            success: '#1E6B3A',
+          },
+          fontFamily: {
+            unbounded: ['Unbounded', 'sans-serif'],
+            bricolage: ['Bricolage Grotesque', 'sans-serif'],
+            grotesk: ['Space Grotesk', 'sans-serif'],
+            mono: ['Space Mono', 'monospace'],
+            editorial: ['DM Sans', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    ::selection { background-color: rgba(255,81,0,0.2); }
+    * { box-sizing: border-box; }
+    body { font-family: 'Space Grotesk', sans-serif; }
+
+    /* Nav transitions */
+    #mainNav {
+      transition: background 0.3s, padding 0.3s, border-color 0.3s, backdrop-filter 0.3s;
+    }
+    #mainNav.scrolled {
+      background: rgba(17, 17, 17, 0.97);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255,81,0,0.2);
+      padding-top: 12px;
+      padding-bottom: 12px;
+    }
+    #mainNav.not-scrolled {
+      background: #111111;
+      padding-top: 24px;
+      padding-bottom: 24px;
+    }
+
+    /* Hover lift on ROI cards */
+    .roi-card { transition: transform 0.2s ease, box-shadow 0.2s ease; }
+    .roi-card:hover { transform: translateY(-8px); box-shadow: 0 12px 32px rgba(0,0,0,0.12); }
+
+    /* Upload zone drag state */
+    #uploadZone.dragover {
+      border-color: #FF5100;
+      background-color: rgba(255,81,0,0.04);
+    }
+    #uploadZone.dragover #uploadIconWrapper {
+      background-color: #FF5100;
+      color: #fff;
+      transform: scale(1.1);
+    }
+
+    /* Reveal animation */
+    .reveal { opacity: 0; transform: translateY(12px); transition: opacity 0.5s ease, transform 0.5s ease; }
+    .reveal.is-visible { opacity: 1; transform: none; }
+
+    /* Pricing input styling */
+    .price-input {
+      font-family: 'Space Mono', monospace;
+      font-size: 1.05rem;
+      font-weight: 700;
+      width: 120px;
+      text-align: right;
+      padding: 8px 12px;
+      border: 2px solid #D0D0D0;
+      border-radius: 8px;
+      background: #F5F5F0;
+      color: #111111;
+      outline: none;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .price-input:focus {
+      border-color: #FF5100;
+      background: #fff;
+    }
+    .price-input:hover {
+      border-color: #888;
+    }
+
+    /* Group hover for cards */
+    .card-group:hover .card-bg { transform: scale(1.03); }
+    .card-bg { transition: transform 0.3s ease; }
+
+    html { scroll-behavior: smooth; }
+
+    @media (prefers-reduced-motion: reduce) {
+      .reveal { opacity: 1; transform: none; transition: none; }
+      .roi-card { transition: none; }
+      html { scroll-behavior: auto; }
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-white text-charcoal font-grotesk">
+
+  <!-- ===================== NAVIGATION ===================== -->
+  <nav id="mainNav" class="not-scrolled fixed top-0 w-full z-50">
+    <div class="max-w-7xl mx-auto px-6 flex justify-between items-center">
+
+      <!-- LEFT: Logos -->
+      <div class="flex items-center gap-6">
+        <a href="https://www.dataronin.ai/" target="_blank" rel="noopener"
+           class="flex items-center gap-3 px-4 py-2 rounded-xl transition-all active:scale-95">
+          <img src="assets/dozer.png" alt="Dozer" class="h-12 w-auto object-contain"
+               onerror="this.style.display='none'; document.getElementById('dozerFallback').style.display='block'">
+          <span id="dozerFallback" class="font-unbounded text-2xl font-extrabold text-hiviz hidden">DOZER</span>
+        </a>
+        <div class="h-8 w-px bg-white/20 hidden md:block"></div>
+        <a href="https://www.dataronin.ai/" target="_blank" rel="noopener"
+           class="hidden md:flex items-center gap-2">
+          <img src="assets/roninlogo.png" alt="Data Ronin" class="h-10 w-auto object-contain">
+        </a>
+      </div>
+
+      <!-- RIGHT: Nav Links -->
+      <div class="flex items-center gap-8">
+        <div class="hidden lg:flex gap-8 font-mono text-xs font-bold uppercase tracking-widest text-white/60">
+          <a href="#problem" class="hover:text-hiviz transition-colors">The Problem</a>
+          <a href="#solution" class="hover:text-hiviz transition-colors">The Solution</a>
+          <a href="#roi" class="hover:text-hiviz transition-colors">ROI</a>
+        </div>
+        <a href="#process-section"
+           onclick="event.preventDefault(); document.getElementById('process-section').scrollIntoView({behavior:'smooth'});">
+          <img src="assets/veteranlogo.png" alt="Veteran Owned Business" class="h-14 w-auto object-contain hover:scale-105 transition-transform">
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ===================== HERO ===================== -->
+  <header class="relative pt-40 pb-20 px-6 overflow-hidden bg-white">
+    <div class="max-w-5xl mx-auto text-center relative z-10">
+
+      <div class="inline-block px-4 py-1.5 mb-6 border-2 border-border-gray rounded-lg bg-surface font-mono text-[11px] uppercase tracking-[0.3em] text-lt-gray font-bold">
+        POC — March 2026
+      </div>
+
+      <h1 class="font-unbounded text-5xl md:text-7xl font-extrabold tracking-tight mb-8 leading-[1.05] text-charcoal">
+        Earthworks Bids<br>
+        <span class="font-editorial italic font-light text-lt-gray">at the speed of thought.</span>
+      </h1>
+
+      <p class="text-xl md:text-2xl text-lt-gray max-w-2xl mx-auto font-editorial font-light leading-relaxed mb-12">
+        Upload a geotechnical report. Get an earthworks bid estimate in minutes — not days.
+        14 AI agents extract, analyze, and price your project automatically.
+      </p>
+
+      <div class="flex flex-col md:flex-row items-center justify-center gap-4 mb-8">
+        <button onclick="document.getElementById('process-section').scrollIntoView({behavior:'smooth'});"
+                class="w-full md:w-auto px-10 py-4 bg-hiviz text-white rounded-xl font-bold text-lg hover:bg-hiviz-dark hover:shadow-2xl transition-all flex items-center justify-center gap-3 active:scale-95">
+          Upload a Report
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="9 18 15 12 9 6"/>
+          </svg>
+        </button>
+        <button onclick="openSampleReport()"
+                class="w-full md:w-auto px-10 py-4 border-2 border-border-gray rounded-xl font-semibold text-lg text-charcoal hover:bg-surface transition-all active:scale-95">
+          View Sample Report
+        </button>
+      </div>
+
+    </div>
+
+    <!-- Decorative divider -->
+    <div class="absolute bottom-0 left-0 right-0 h-px bg-border-gray"></div>
+  </header>
+
+  <!-- ===================== PROBLEM ===================== -->
+  <section id="problem" class="py-24 bg-surface border-b border-border-gray">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="grid lg:grid-cols-2 gap-16 items-center">
+
+        <div>
+          <span class="text-hiviz font-mono font-bold text-xs uppercase tracking-widest block mb-4">The Challenge</span>
+          <h2 class="font-bricolage text-4xl font-extrabold mb-6 text-charcoal">A Costly, Manual Bottleneck.</h2>
+          <div class="space-y-6 text-lt-gray text-lg leading-relaxed font-editorial font-light">
+            <p>
+              Senior engineers currently spend <strong class="text-charcoal font-grotesk font-semibold">6–10 hours</strong> per report manually formatting data.
+              This pulls licensed professionals away from billable field work to perform repetitive data entry.
+            </p>
+            <div class="flex items-start gap-4 p-6 bg-white rounded-xl border-l-4 border-hiviz shadow-sm">
+              <svg class="text-hiviz mt-1 shrink-0" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                   viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25"
+                   stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+              </svg>
+              <p class="text-base italic text-md-gray">
+                "Every project in expansive soil territory requires a PVR Conversion Report.
+                Developers wait days while permitting stalls."
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Figma Embed 1 -->
+        <div class="relative card-group">
+          <div class="card-bg absolute -inset-4 bg-border-gray/40 rounded-[1.5rem] -z-10"></div>
+          <div class="bg-white rounded-xl shadow-lg overflow-hidden border border-border-gray">
+            <div class="p-4 bg-surface border-b border-border-gray flex items-center justify-between">
+              <span class="font-mono text-xs font-bold uppercase tracking-widest text-lt-gray">Current Workflow</span>
+              <div class="flex space-x-2">
+                <div class="w-2 h-2 rounded-full bg-border-gray"></div>
+                <div class="w-2 h-2 rounded-full bg-border-gray"></div>
+                <div class="w-2 h-2 rounded-full bg-border-gray"></div>
+              </div>
+            </div>
+            <iframe
+              class="w-full aspect-video"
+              src="https://embed.figma.com/board/I3pnwj0MEN3uO1PFds6mKp/Current-Manual-PVR-Workflow-%E2%80%94-The-Problem?node-id=0-1&embed-host=share"
+              allowfullscreen>
+            </iframe>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== SOLUTION ===================== -->
+  <section id="solution" class="py-24 bg-white">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="grid lg:grid-cols-2 gap-16 items-center">
+
+        <!-- Figma Embed 2 -->
+        <div class="order-2 lg:order-1 relative card-group">
+          <div class="card-bg absolute -inset-4 bg-surface rounded-[1.5rem] -z-10"></div>
+          <div class="bg-white rounded-xl shadow-lg overflow-hidden border border-border-gray">
+            <div class="p-4 bg-surface border-b border-border-gray flex items-center justify-between">
+              <span class="font-mono text-xs font-bold uppercase tracking-widest text-hiviz">Automated Future</span>
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+                   fill="#FF5100" stroke="#FF5100" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+              </svg>
+            </div>
+            <iframe
+              class="w-full aspect-video"
+              src="https://embed.figma.com/board/3lG2Q3D6Dm2VW9TNLBRwdX/Post-Implementation-Operations-%E2%80%94-Clear-Start-to-End?node-id=0-1&embed-host=share"
+              allowfullscreen>
+            </iframe>
+          </div>
+        </div>
+
+        <div class="order-1 lg:order-2">
+          <span class="text-hiviz font-mono font-bold text-xs uppercase tracking-widest block mb-4">The Solution</span>
+          <h2 class="font-bricolage text-4xl font-extrabold mb-6 text-charcoal">14-Agent AI Pipeline.</h2>
+          <div class="space-y-6 text-lt-gray text-lg font-editorial font-light">
+            <p>
+              Our AI system uses <strong class="font-grotesk font-semibold text-charcoal">14 specialized agents</strong> to extract data,
+              classify soils, calculate PVR, select treatments, compute quantities, and generate a full bid estimate — all in minutes.
+            </p>
+            <ul class="space-y-4">
+              <li class="flex items-center gap-3 text-base font-grotesk text-charcoal">
+                <div class="p-1.5 bg-hiviz/10 rounded-lg">
+                  <svg class="text-hiviz" xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                       viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25"
+                       stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/>
+                  </svg>
+                </div>
+                82 fields extracted from boring logs, lab tests, soil profiles
+              </li>
+              <li class="flex items-center gap-3 text-base font-grotesk text-charcoal">
+                <div class="p-1.5 bg-hiviz/10 rounded-lg">
+                  <svg class="text-hiviz" xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                       viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25"
+                       stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/>
+                  </svg>
+                </div>
+                PVR calculation with treatment recommendations
+              </li>
+              <li class="flex items-center gap-3 text-base font-grotesk text-charcoal">
+                <div class="p-1.5 bg-hiviz/10 rounded-lg">
+                  <svg class="text-hiviz" xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                       viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25"
+                       stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/>
+                  </svg>
+                </div>
+                Cut/fill quantities with swell and shrinkage factors
+              </li>
+              <li class="flex items-center gap-3 text-base font-grotesk text-charcoal">
+                <div class="p-1.5 bg-hiviz/10 rounded-lg">
+                  <svg class="text-hiviz" xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                       viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25"
+                       stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/>
+                  </svg>
+                </div>
+                Confidence scoring on every data point and final bid
+              </li>
+            </ul>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== ROI ===================== -->
+  <section id="roi" class="py-24 bg-charcoal relative">
+    <div class="max-w-7xl mx-auto px-6">
+
+      <div class="text-center mb-16">
+        <h2 class="font-bricolage text-4xl font-extrabold mb-3 text-white">Economic Impact</h2>
+        <div class="w-24 h-0.5 bg-hiviz mx-auto rounded-full"></div>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-8">
+
+        <!-- Card: Time -->
+        <div class="roi-card p-10 bg-dk-gray rounded-xl border border-md-gray/50">
+          <div class="text-amber mb-6">
+            <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24"
+                 fill="none" stroke="currentColor" stroke-width="2.25"
+                 stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+            </svg>
+          </div>
+          <div class="font-mono text-4xl font-bold mb-2 text-amber">8 hrs</div>
+          <div class="font-mono text-xs font-bold uppercase tracking-widest text-lt-gray mb-4">Manual Entry Time</div>
+          <p class="text-lt-gray font-editorial font-light">Average time recovered per report across senior engineering staff.</p>
+        </div>
+
+        <!-- Card: Savings (hiviz accent) -->
+        <div class="roi-card p-10 bg-hiviz rounded-xl shadow-xl">
+          <div class="text-white mb-6">
+            <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24"
+                 fill="none" stroke="currentColor" stroke-width="2.25"
+                 stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/>
+              <polyline points="16 7 22 7 22 13"/>
+            </svg>
+          </div>
+          <div class="font-mono text-4xl font-bold mb-2 text-white">$60,000</div>
+          <div class="font-mono text-xs font-bold uppercase tracking-widest text-white/70 mb-4">Annual Savings</div>
+          <p class="text-white/80 font-editorial font-light">Estimated labor recovery for a mid-sized firm processing 50 reports/year.</p>
+        </div>
+
+        <!-- Card: Traceability -->
+        <div class="roi-card p-10 bg-dk-gray rounded-xl border border-md-gray/50">
+          <div class="text-amber mb-6">
+            <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24"
+                 fill="none" stroke="currentColor" stroke-width="2.25"
+                 stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              <path d="m9 12 2 2 4-4"/>
+            </svg>
+          </div>
+          <div class="font-mono text-4xl font-bold mb-2 text-amber">100%</div>
+          <div class="font-mono text-xs font-bold uppercase tracking-widest text-lt-gray mb-4">Traceability</div>
+          <p class="text-lt-gray font-editorial font-light">Every AI-extracted value maps directly back to a page reference in the source PDF.</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== UPLOAD + PRICING ===================== -->
+  <section id="process-section" class="py-24 px-6 bg-white">
+    <div class="max-w-4xl mx-auto">
+      <div class="bg-surface p-12 rounded-xl border border-border-gray shadow-lg relative overflow-hidden">
+
+        <div class="text-center mb-10 relative z-10">
+          <h3 class="font-bricolage text-3xl font-extrabold mb-4 text-charcoal">Process a New Report</h3>
+          <p class="text-lt-gray font-editorial font-light text-lg">Upload your Geotechnical PDF. Adjust unit costs to your market. Get a bid estimate.</p>
+        </div>
+
+        <form id="uploadForm" enctype="multipart/form-data" class="relative z-10">
+
+          <!-- UPLOAD ZONE -->
+          <div id="uploadZone"
+               class="relative border-2 border-dashed border-border-gray rounded-xl p-16 text-center transition-all cursor-pointer hover:border-hiviz/50 hover:bg-white bg-white">
+
+            <input type="file" name="report_file" id="fileInput"
+                   class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                   accept="application/pdf" required>
+
+            <div class="flex flex-col items-center pointer-events-none">
+              <div id="uploadIconWrapper"
+                   class="p-6 rounded-xl mb-6 transition-all bg-hiviz/10 text-hiviz">
+                <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24"
+                     fill="none" stroke="currentColor" stroke-width="2.25"
+                     stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                  <polyline points="17 8 12 3 7 8"/>
+                  <line x1="12" y1="3" x2="12" y2="15"/>
+                </svg>
+              </div>
+              <p class="text-lg font-semibold mb-1 text-charcoal">Click to select or drag and drop</p>
+              <p class="text-sm text-lt-gray font-mono">Supports PDF reports up to 50MB</p>
+            </div>
+          </div>
+
+          <div id="fileList" class="mt-6 space-y-2"></div>
+
+          <!-- FIELDS + PRICING (hidden until file selected) -->
+          <div id="additionalFields" class="mt-8" style="display:none;">
+
+            <!-- Name / Email -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+              <input type="text" name="submitter_name" placeholder="Your Name"
+                     class="px-6 py-4 bg-white rounded-xl border border-border-gray text-charcoal text-base font-grotesk outline-none focus:ring-2 focus:ring-hiviz focus:border-hiviz placeholder:text-lt-gray">
+              <input type="email" name="submitter_email" placeholder="Email"
+                     class="px-6 py-4 bg-white rounded-xl border border-border-gray text-charcoal text-base font-grotesk outline-none focus:ring-2 focus:ring-hiviz focus:border-hiviz placeholder:text-lt-gray">
+            </div>
+
+            <!-- PRICING DEFAULTS -->
+            <div class="mb-8 p-6 bg-white rounded-xl border border-border-gray">
+              <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
+                <h4 class="font-bricolage text-xl font-extrabold text-charcoal">Unit Cost Defaults</h4>
+                <span class="font-mono text-[10px] uppercase tracking-widest text-lt-gray bg-surface px-3 py-1 rounded-lg border border-border-gray">Editable — adjust to your market</span>
+              </div>
+              <p class="text-lt-gray text-sm font-editorial font-light mb-6">These defaults are based on Central Texas averages. Change any value to match your local rates before submitting.</p>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-5">
+
+                <div class="flex items-center justify-between gap-3">
+                  <label class="text-charcoal text-sm font-grotesk font-medium">Cut per BCY</label>
+                  <div class="flex items-center gap-1">
+                    <span class="text-hiviz font-mono text-sm font-bold">$</span>
+                    <input type="number" name="cost_cut_bcy" value="4.50" step="0.25" min="0" class="price-input">
+                  </div>
+                </div>
+
+                <div class="flex items-center justify-between gap-3">
+                  <label class="text-charcoal text-sm font-grotesk font-medium">Fill per CCY</label>
+                  <div class="flex items-center gap-1">
+                    <span class="text-hiviz font-mono text-sm font-bold">$</span>
+                    <input type="number" name="cost_fill_ccy" value="7.50" step="0.25" min="0" class="price-input">
+                  </div>
+                </div>
+
+                <div class="flex items-center justify-between gap-3">
+                  <label class="text-charcoal text-sm font-grotesk font-medium">Mobilization</label>
+                  <div class="flex items-center gap-1">
+                    <span class="text-hiviz font-mono text-sm font-bold">$</span>
+                    <input type="number" name="cost_mobilization" value="12000" step="500" min="0" class="price-input" style="width:130px;">
+                  </div>
+                </div>
+
+                <div class="flex items-center justify-between gap-3">
+                  <label class="text-charcoal text-sm font-grotesk font-medium">Lime Treatment / ton</label>
+                  <div class="flex items-center gap-1">
+                    <span class="text-hiviz font-mono text-sm font-bold">$</span>
+                    <input type="number" name="cost_lime_ton" value="22.00" step="0.50" min="0" class="price-input">
+                  </div>
+                </div>
+
+                <div class="flex items-center justify-between gap-3">
+                  <label class="text-charcoal text-sm font-grotesk font-medium">Import Material / CCY</label>
+                  <div class="flex items-center gap-1">
+                    <span class="text-hiviz font-mono text-sm font-bold">$</span>
+                    <input type="number" name="cost_import_ccy" value="18.00" step="0.50" min="0" class="price-input">
+                  </div>
+                </div>
+
+                <div class="flex items-center justify-between gap-3">
+                  <label class="text-charcoal text-sm font-grotesk font-medium">Export Haul / LCY</label>
+                  <div class="flex items-center gap-1">
+                    <span class="text-hiviz font-mono text-sm font-bold">$</span>
+                    <input type="number" name="cost_export_lcy" value="12.00" step="0.50" min="0" class="price-input">
+                  </div>
+                </div>
+
+                <div class="flex items-center justify-between gap-3">
+                  <label class="text-charcoal text-sm font-grotesk font-medium">Subgrade Prep / SY</label>
+                  <div class="flex items-center gap-1">
+                    <span class="text-hiviz font-mono text-sm font-bold">$</span>
+                    <input type="number" name="cost_subgrade_sy" value="2.50" step="0.25" min="0" class="price-input">
+                  </div>
+                </div>
+
+                <div class="flex items-center justify-between gap-3">
+                  <label class="text-charcoal text-sm font-grotesk font-medium">Equipment / day</label>
+                  <div class="flex items-center gap-1">
+                    <span class="text-hiviz font-mono text-sm font-bold">$</span>
+                    <input type="number" name="cost_equipment_day" value="3500" step="100" min="0" class="price-input" style="width:130px;">
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- SUBMIT -->
+            <button type="submit" id="submitBtn"
+                    class="w-full bg-hiviz text-white py-5 rounded-xl font-bold text-lg hover:bg-hiviz-dark hover:shadow-2xl transition-all flex items-center justify-center gap-3 active:scale-[0.98]">
+              Submit Report for Analysis
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                   fill="none" stroke="currentColor" stroke-width="2.25"
+                   stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+              </svg>
+            </button>
+            <div id="statusMessage" class="mt-4 text-center text-sm font-mono font-bold"></div>
+          </div>
+
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== STAKEHOLDER MAP ===================== -->
+  <section class="py-24 bg-charcoal">
+    <div class="max-w-7xl mx-auto px-6">
+
+      <div class="mb-16">
+        <h2 class="font-bricolage text-4xl font-extrabold text-white mb-4">Organizational Impact</h2>
+        <p class="max-w-xl font-editorial font-light text-lg text-lt-gray">
+          Successful AI adoption is 20% technology and 80% people.
+          We address concerns across your entire team.
+        </p>
+      </div>
+
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+        <div class="p-8 bg-dk-gray border border-md-gray/40 rounded-xl">
+          <div class="flex justify-between items-start mb-6">
+            <span class="text-white font-grotesk font-bold text-base">Senior Engineers</span>
+            <div class="px-2 py-1 bg-amber text-charcoal font-mono text-[10px] rounded-lg uppercase font-bold tracking-widest">Quality Authority</div>
+          </div>
+          <div class="font-mono text-[10px] text-lt-gray/60 uppercase tracking-widest mb-1">Response</div>
+          <p class="text-lt-gray text-sm leading-relaxed font-editorial font-light">
+            AI handles drafting; PE handles approval. Liability structure remains unchanged.
+          </p>
+        </div>
+
+        <div class="p-8 bg-dk-gray border border-md-gray/40 rounded-xl">
+          <div class="flex justify-between items-start mb-6">
+            <span class="text-white font-grotesk font-bold text-base">Junior Engineers</span>
+            <div class="px-2 py-1 bg-amber text-charcoal font-mono text-[10px] rounded-lg uppercase font-bold tracking-widest">Data Validation</div>
+          </div>
+          <div class="font-mono text-[10px] text-lt-gray/60 uppercase tracking-widest mb-1">Response</div>
+          <p class="text-lt-gray text-sm leading-relaxed font-editorial font-light">
+            Shift from data entry to high-value field expertise and AI oversight.
+          </p>
+        </div>
+
+        <div class="p-8 bg-dk-gray border border-md-gray/40 rounded-xl">
+          <div class="flex justify-between items-start mb-6">
+            <span class="text-white font-grotesk font-bold text-base">Project Managers</span>
+            <div class="px-2 py-1 bg-amber text-charcoal font-mono text-[10px] rounded-lg uppercase font-bold tracking-widest">Speed to Market</div>
+          </div>
+          <div class="font-mono text-[10px] text-lt-gray/60 uppercase tracking-widest mb-1">Response</div>
+          <p class="text-lt-gray text-sm leading-relaxed font-editorial font-light">
+            Confidence scores and gap flags provide a clear audit trail for clients.
+          </p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== FOOTER ===================== -->
+  <footer class="py-20 bg-charcoal border-t border-md-gray/30">
+    <div class="max-w-4xl mx-auto px-6 text-center">
+
+      <div class="inline-flex items-center gap-2 text-hiviz font-mono font-bold text-xs uppercase tracking-[0.2em] mb-8">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+             fill="none" stroke="currentColor" stroke-width="2.25"
+             stroke-linecap="round" stroke-linejoin="round">
+          <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/>
+          <line x1="12" y1="9" x2="12" y2="13"/>
+          <line x1="12" y1="17" x2="12.01" y2="17"/>
+        </svg>
+        Professional Disclaimer
+      </div>
+
+      <div class="text-lt-gray/60 text-xs leading-loose space-y-4 max-w-2xl mx-auto uppercase tracking-wider font-mono">
+        <p>
+          This bid estimate is generated using automated AI analysis based on submitted geotechnical documents.
+          It does not replace a stamped geotechnical engineering report and does not constitute engineering design or certification.
+        </p>
+        <p>
+          Users are strongly advised to engage a licensed geotechnical engineer for final design and approval.
+          Data Ronin assumes no liability for decisions made based on this draft analysis.
+        </p>
+      </div>
+
+      <div class="mt-16 pt-16 border-t border-md-gray/30 flex flex-col md:flex-row justify-between items-center gap-8">
+        <div class="flex items-center gap-6">
+          <img src="assets/dozer.png" alt="Dozer" class="h-12 w-auto object-contain">
+          <div class="h-8 w-px bg-md-gray/30"></div>
+          <a href="https://www.dataronin.ai/" target="_blank" rel="noopener">
+            <img src="assets/roninlogo.png" alt="Data Ronin" class="h-10 w-auto object-contain opacity-70 hover:opacity-100 transition-opacity">
+          </a>
+        </div>
+        <div class="font-mono text-[10px] text-lt-gray/40 uppercase tracking-widest font-bold">
+          &copy; 2026 DATA RONIN &middot; Dozer Earthworks Bid Automation
+        </div>
+      </div>
+
+    </div>
+  </footer>
+
+  <!-- ===================== JAVASCRIPT ===================== -->
+  <script>
+    // Nav scroll effect
+    const nav = document.getElementById('mainNav');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 50) {
+        nav.classList.remove('not-scrolled');
+        nav.classList.add('scrolled');
+      } else {
+        nav.classList.remove('scrolled');
+        nav.classList.add('not-scrolled');
+      }
+    });
+
+    // Sample report popup
+    function openSampleReport() {
+      window.open('assets/samplepvrreport.pdf', '_blank');
+    }
+
+    // Reveal animation
+    (function initReveal() {
+      const els = document.querySelectorAll('.reveal');
+      if (!els.length) return;
+      const obs = new IntersectionObserver(entries => {
+        entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('is-visible'); });
+      }, { threshold: 0.08 });
+      els.forEach(el => obs.observe(el));
+    })();
+  </script>
+
+  <!-- Upload, pricing, and form submission logic -->
+  <script src="app.js"></script>
+
+</body>
+</html>

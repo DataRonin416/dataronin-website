@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dozer — Earthworks Bid Estimate</title>
+  <!--[if mso]>
+  <style>table,td{font-family:Arial,sans-serif!important;}</style>
+  <![endif]-->
+  <style>
+    body,table,td,a{-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%}
+    table,td{mso-table-lspace:0;mso-table-rspace:0}
+    img{-ms-interpolation-mode:bicubic;border:0;outline:none;text-decoration:none}
+    body{margin:0;padding:0;width:100%!important;min-width:100%;background-color:#F5F5F0}
+    .font-grotesk{font-family:'Space Grotesk',Helvetica,Arial,sans-serif}
+    .font-mono{font-family:'Space Mono','Courier New',monospace}
+    .font-editorial{font-family:'DM Sans',Helvetica,Arial,sans-serif}
+    .pg{font-family:'Space Mono',monospace;font-size:10px;color:#FF5100;font-weight:700;white-space:nowrap;text-decoration:none;}
+    @media only screen and (max-width:620px){
+      .container{width:100%!important;padding:0 16px!important}
+      .row-pad{padding-left:16px!important;padding-right:16px!important}
+      .stack{display:block!important;width:100%!important}
+      .hide-mobile{display:none!important}
+    }
+  </style>
+</head>
+<body style="margin:0;padding:0;background-color:#F5F5F0;">
+
+<!-- PREVIEW TEXT -->
+<div style="display:none;font-size:1px;color:#F5F5F0;line-height:1px;max-height:0;max-width:0;opacity:0;overflow:hidden;">
+  Your Dozer earthworks bid estimate is ready — {{project_name}} | {{total_bid_amount}}
+</div>
+
+<!-- OUTER WRAPPER -->
+<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background-color:#F5F5F0;">
+<tr><td align="center" style="padding:24px 0;">
+
+<!-- MAIN CONTAINER -->
+<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="600" class="container" style="max-width:600px;width:100%;background-color:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.06);">
+
+  <!-- ═══ HEADER BAR ═══ -->
+  <tr>
+    <td style="background-color:#111111;padding:24px 32px;">
+      <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
+        <tr>
+          <td style="width:120px;">
+            <img src="https://dataronin416.github.io/venditti/assets/dozer.png" alt="Dozer" width="100" style="display:block;height:auto;">
+          </td>
+          <td align="right" style="vertical-align:middle;">
+            <span class="font-mono" style="font-family:'Space Mono',monospace;font-size:11px;color:#888888;text-transform:uppercase;letter-spacing:2px;">Earthworks Bid Estimate</span>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+
+  <!-- ═══ GREETING ═══ -->
+  <tr>
+    <td style="padding:32px 32px 16px;" class="row-pad">
+      <p class="font-grotesk" style="font-family:'Space Grotesk',Helvetica,sans-serif;font-size:24px;font-weight:700;color:#111111;margin:0 0 8px;">
+        Your Bid Estimate is Ready
+      </p>
+      <p class="font-editorial" style="font-family:'DM Sans',Helvetica,sans-serif;font-size:16px;font-weight:300;color:#888888;margin:0;line-height:1.5;">
+        Hi {{submitter_name}},<br>
+        Dozer has finished processing your geotechnical report. Below is your automated earthworks bid estimate. Each extracted value includes the <span style="color:#FF5100;font-weight:700;">source page number</span> from your report for verification.
+      </p>
+    </td>
+  </tr>
+
+  <!-- ═══ PROJECT SUMMARY ═══ -->
+  <tr>
+    <td style="padding:0 32px 24px;" class="row-pad">
+      <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background-color:#F5F5F0;border-radius:8px;border:1px solid #D0D0D0;">
+        <tr>
+          <td style="padding:20px 24px 12px;">
+            <span class="font-mono" style="font-family:'Space Mono',monospace;font-size:10px;color:#FF5100;text-transform:uppercase;letter-spacing:2px;font-weight:700;">Project Summary</span>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:0 24px 20px;">
+            <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
+              <tr>
+                <td class="stack" style="width:50%;vertical-align:top;padding-bottom:12px;">
+                  <span class="font-mono" style="font-family:'Space Mono',monospace;font-size:10px;color:#888888;text-transform:uppercase;letter-spacing:1px;">Project</span><br>
+                  <span class="font-grotesk" style="font-family:'Space Grotesk',Helvetica,sans-serif;font-size:15px;font-weight:600;color:#111111;">{{project_name}}</span>
+                  <span class="pg">p.{{project_name_page}}</span>
+                </td>
+                <td class="stack" style="width:50%;vertical-align:top;padding-bottom:12px;">
+                  <span class="font-mono" style="font-family:'Space Mono',monospace;font-size:10px;color:#888888;text-transform:uppercase;letter-spacing:1px;">Location</span><br>
+                  <span class="font-grotesk" style="font-family:'Space Grotesk',Helvetica,sans-serif;font-size:15px;font-weight:600;color:#111111;">{{project_location}}</span>
+                  <span class="pg">p.{{project_location_page}}</span>
+                </td>
+              </tr>
+              <tr>
+                <td class="stack" style="width:50%;vertical-align:top;padding-bottom:12px;">
+                  <span class="font-mono" style="font-family:'Space Mono',monospace;font-size:10px;color:#888888;text-transform:uppercase;letter-spacing:1px;">Report Date</span><br>
+                  <span class="font-grotesk" style="font-family:'Space Grotesk',Helvetica,sans-serif;font-size:15px;font-weight:600;color:#111111;">{{report_date}}</span>
+                  <span class="pg">p.{{report_date_page}}</span>
+                </td>
+                <td class="stack" style="width:50%;vertical-align:top;padding-bottom:12px;">
+                  <span class="font-mono" style="font-family:'Space Mono',monospace;font-size:10px;color:#888888;text-transform:uppercase;letter-spacing:1px;">Report Author</span><br>
+                  <span class="font-grotesk" style="font-family:'Space Grotesk',Helvetica,sans-serif;font-size:15px;font-weight:600;color:#111111;">{{report_author}}</span>
+                  <span class="pg">p.{{report_author_page}}</span>
+                </td>
+              </tr>
+              <tr>
+                <td class="stack" style="width:50%;vertical-align:top;">
+                  <span class="font-mono" style="font-family:'Space Mono',monospace;font-size:10px;color:#888888;text-transform:uppercase;letter-spacing:1px;">Borings</span><br>
+                  <span class="font-grotesk" style="font-family:'Space Grotesk',Helvetica,sans-serif;font-size:15px;font-weight:600;color:#111111;">{{number_of_borings}}</span>
+                  <span class="pg">p.{{borings_page}}</span>
+                </td>
+                <td class="stack" style="width:50%;vertical-align:top;">
+                  <span class="font-mono" style="font-family:'Space Mono',monospace;font-size:10px;color:#888888;text-transform:uppercase;letter-spacing:1px;">Confidence</span><br>
+                  <span class="font-grotesk" style="font-family:'Space Grotesk',Helvetica,sans-serif;font-size:15px;font-weight:700;color:#FF5100;">{{overall_confidence}}%</span>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+
+  <!-- ═══ TOTAL BID (HERO) ═══ -->
+  <tr>
+    <td style="padding:0 32px 24px;" class="row-pad">
+      <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background-color:#111111;border-radius:8px;">
+        <tr>
+          <td align="center" style="padding:28px 24px;">
+            <span class="font-mono" style="font-family:'Space Mono',monospace;font-size:10px;color:#FFB300;text-transform:uppercase;letter-spacing:3px;font-weight:700;">Total Bid Estimate</span><br>
+            <span class="font-mono" style="font-family:'Space Mono',monospace;font-size:42px;font-weight:700;color:#FFFFFF;letter-spacing:-1px;">{{total_bid_amount}}</span><br>
+            <span class="font-mono" style="font-family:'Space Mono',monospace;font-size:11px;color:#888888;text-transform:uppercase;letter-spacing:1px;">Bid Confidence: {{bid_confidence}}%</span>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+
+  <!-- ═══ PAGE REFERENCE LEGEND ═══ -->
+  <tr>
+    <td style="padding:0 32px 16px;" class="row-pad">
+      <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="border-radius:6px;background-color:#FFF8F5;border:1px solid #FFD6C4;padding:10px;">
+        <tr>
+          <td style="padding:10px 14px;">
+            <span class="pg" style="font-size:11px;">p.12</span>
+            <span class="font-editorial" style="font-family:'DM Sans',Helvetica,sans-serif;font-size:12px;color:#888888;font-weight:300;margin-left:6px;">= page number in your original PDF where this data was found. Use it to spot-check any value.</span>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+
+  <!-- ═══ SOIL & PVR ANALYSIS ═══ -->
+  <tr>
+    <td style="padding:0 32px 24px;" class="row-pad">
+      <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background-color:#F5F5F0;border-radius:8px;border:1px solid #D0D0D0;">
+        <tr>
+          <td style="padding:20px 24px 8px;">
+            <span class="font-mono" style="font-family:'Space Mono',monospace;font-size:10px;color:#FF5100;text-transform:uppercase;letter-spacing:2px;font-weight:700;">Soil &amp; PVR Analysis</span>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:8px 24px 20px;">
+            <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
+              <!-- Header -->
+              <tr>
+                <td style="padding:4px 0 8px;border-bottom:2px solid #D0D0D0;"><span class="font-mono" style="font-family:'Space Mono',monospace;font-size:9px;color:#888888;text-transform:uppercase;letter-spacing:1px;">Field</span></td>
+                <td align="right" style="padding:4px 0 8px;border-bottom:2px solid #D0D0D0;"><span class="font-mono" style="font-family:'Space Mono',monospace;font-size:9px;color:#888888;text-transform:uppercase;letter-spacing:1px;">Value</span></td>
+                <td align="right" style="padding:4px 0 8px;border-bottom:2px solid #D0D0D0;width:48px;"><span class="font-mono" style="font-family:'Space Mono',monospace;font-size:9px;color:#888888;text-transform:uppercase;letter-spacing:1px;">Src</span></td>
+              </tr>
+              <!-- Rows -->
+              <tr>
+                <td style="padding:7px 0;border-bottom:1px solid #E0E0E0;"><span class="font-grotesk" style="font-family:'Space Grotesk',Helvetica,sans-serif;font-size:14px;color:#111111;">Predominant Soil</span></td>
+                <td align="right" style="padding:7px 0;border-bottom:1px solid #E0E0E0;"><span class="font-mono" style="font-family:'Space Mono',monospace;font-size:14px;font-weight:700;color:#111111;">{{predominant_uscs}}</span></td>
+                <td align="right" style="padding:7px 0;border-bottom:1px solid #E0E0E0;"><span class="pg">p.{{soil_class_page}}</span></td>
+              </tr>
+              <tr>
+                <td style="padding:7px 0;border-bottom:1px solid #E0E0E0;"><span class="font-grotesk" style="font-family:'Space Grotesk',Helvetica,sans-serif;font-size:14px;color:#111111;">Plasticity Index (PI)</span></td>
+                <td align="right" style="padding:7px 0;border-bottom:1px solid #E0E0E0;"><span class="font-mono" style="font-family:'Space Mono',monospace;font-size:14px;font-weight:700;color:#111111;">{{avg_plasticity_index}}</span></td>
+                <td align="right" style="padding:7px 0;border-bottom:1px solid #E0E0E0;"><span class="pg">p.{{pi_page}}</span></td>
+              </tr>
+              <tr>
+                <td style="padding:7px 0;border-bottom:1px solid #E0E0E0;"><span class="font-grotesk" style="font-family:'Space Grotesk',Helvetica,sans-serif;font-size:14px;color:#111111;">Liquid Limit (LL)</span></td>
+                <td align="right" style="padding:7px 0;border-bottom:1px solid #E0E0E0;"><span class="font-mono" style="font-family:'Space Mono',monospace;font-size:14px;font-weight:700;color:#111111;">{{liquid_limit}}</span></td>
+                <td align="right" style="padding:7px 0;border-bottom:1px solid #E0E0E0;"><span class="pg">p.{{ll_page}}</span></td>
+              </tr>
+              <tr>
+                <td style="padding:7px 0;border-bottom:1px solid #E0E0E0;"><span class="font-grotesk" style="font-family:'Space Grotesk',Helvetica,sans-serif;font-size:14px;color:#111111;">Swell Potential</span></td>
+                <td align="right" style="padding:7px 0;border-bottom:1px solid #E0E0E0;"><span class="font-mono" style="font-family:'Space Mono',monospace;font-size:14px;font-weight:700;color:#111111;">{{swell_potential}}</span></td>
+                <td align="right" style="padding:7px 0;border-bottom:1px solid #E0E0E0;"><span class="pg">p.{{swell_page}}</span></td>
+              </tr>
+              <tr>
+                <td style="padding:7px 0;border-bottom:1px solid #E0E0E0;"><span class="font-grotesk" style="font-family:'Space Grotesk',Helvetica,sans-serif;font-size:14px;color:#111111;">PVR Value</span></td>
+                <td align="right" style="padding:7px 0;border-bottom:1px solid #E0E0E0;"><span class="font-mono" style="font-family:'Space Mono',monospace;font-size:14px;font-weight:700;color:#FF5100;">{{pvr_value}} in.</span></td>
+                <td align="right" style="padding:7px 0;border-bottom:1px solid #E0E0E0;"><span class="pg">p.{{pvr_page}}</span></td>
+              </tr>
+              <tr>
+                <td style="padding:7px 0;border-bottom:1px solid #E0E0E0;"><span class="font-grotesk" style="font-family:'Space Grotesk',Helvetica,sans-serif;font-size:14px;color:#111111;">PVR Risk Level</span></td>
+                <td align="right" style="padding:7px 0;border-bottom:1px solid #E0E0E0;"><span class="font-mono" style="font-family:'Space Mono',monospace;font-size:14px;font-weight:700;color:#111111;">{{pvr_risk_level}}</span></td>
+                <td align="right" style="padding:7px 0;border-bottom:1px solid #E0E0E0;"><span class="pg">—</span></td>
+              </tr>
+              <tr>
+                <td style="padding:7px 0;border-bottom:1px solid #E0E0E0;"><span class="font-grotesk" style="font-family:'Space Grotesk',Helvetica,sans-serif;font-size:14px;color:#111111;">Treatment Method</span></td>
+                <td align="right" style="padding:7px 0;border-bottom:1px solid #E0E0E0;"><span class="font-mono" style="font-family:'Space Mono',monospace;font-size:14px;font-weight:700;color:#111111;">{{treatment_method}}</span></td>
+                <td align="right" style="padding:7px 0;border-bottom:1px solid #E0E0E0;"><span class="pg">—</span></td>
+              </tr>
+              <tr>
+                <td style="padding:7px 0;border-bottom:1px solid #E0E0E0;"><span class="font-grotesk" style="font-family:'Space Grotesk',Helvetica,sans-serif;font-size:14px;color:#111111;">Treatment Depth</span></td>
+                <td align="right" style="padding:7px 0;border-bottom:1px solid #E0E0E0;"><span class="font-mono" style="font-family:'Space Mono',monospace;font-size:14px;font-weight:700;color:#111111;">{{treatment_depth}} ft</span></td>
+                <td align="right" style="padding:7px 0;border-bottom:1px solid #E0E0E0;"><span class="pg">—</span></td>
+              </tr>
+              <tr>
+                <td style="padding:7px 0;"><span class="font-grotesk" style="font-family:'Space Grotesk',Helvetica,sans-serif;font-size:14px;color:#111111;">Groundwater Depth</span></td>
+                <td align="right" style="padding:7px 0;"><span class="font-mono" style="font-family:'Space Mono',monospace;font-size:14px;font-weight:700;color:#111111;">{{groundwater_depth}} ft</span></td>
+                <td align="right" style="padding:7px 0;"><span class="pg">p.{{gw_page}}</span></td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+
+  <!-- ═══ QUANTITIES ═══ -->
+  <tr>
+    <td style="padding:0 32px 24px;" class="row-pad">
+      <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background-color:#F5F5F0;border-radius:8px;border:1px solid #D0D0D0;">
+        <tr>
+          <td style="padding:20px 24px 8px;">
+            <span class="font-mono" style="font-family:'Space Mono',monospace;font-size:10px;color:#FF5100;text-transform:uppercase;letter-spacing:2px;font-weight:700;">Earthwork Quantities</span>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:8px 24px 20px;">
+            <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
+              <tr>
+                <td style="padding:4px 0 8px;border-bottom:2px solid #D0D0D0;"><span class="font-mono" style="font-family:'Space Mono',monospace;font-size:9px;color:#888888;text-transform:uppercase;letter-spacing:1px;">Item</span></td>
+                <td align="right" style="padding:4px 0 8px;border-bottom:2px solid #D0D0D0;"><span class="font-mono" style="font-family:'Space Mono',monospace;font-size:9px;color:#888888;text-transform:uppercase;letter-spacing:1px;">Volume</span></td>
+                <td align="right" style="padding:4px 0 8px;border-bottom:2px solid #D0D0D0;width:48px;"><span class="font-mono" style="font-family:'Space Mono',monospace;font-size:9px;color:#888888;text-transform:uppercase;letter-spacing:1px;">Src</span></td>
+              </tr>
+              <tr>
+                <td style="padding:7px 0;border-bottom:1px solid #E0E0E0;"><span class="font-grotesk" style="font-family:'Space Grotesk',Helvetica,sans-serif;font-size:14px;color:#111111;">Cut Volume</span></td>
+                <td align="right" style="padding:7px 0;border-bottom:1px solid #E0E0E0;"><span class="font-mono" style="font-family:'Space Mono',monospace;font-size:14px;font-weight:700;color:#111111;">{{cut_volume_bcy}} BCY</span></td>
+                <td align="right" style="padding:7px 0;border-bottom:1px solid #E0E0E0;"><span class="pg">p.{{cut_page}}</span></td>
+              </tr>
+              <tr>
+                <td style="padding:7px 0;border-bottom:1px solid #E0E0E0;"><span class="font-grotesk" style="font-family:'Space Grotesk',Helvetica,sans-serif;font-size:14px;color:#111111;">Fill Volume</span></td>
+                <td align="right" style="padding:7px 0;border-bottom:1px solid #E0E0E0;"><span class="font-mono" style="font-family:'Space Mono',monospace;font-size:14px;font-weight:700;color:#111111;">{{fill_volume_ccy}} CCY</span></td>
+                <td align="right" style="padding:7px 0;border-bottom:1px solid #E0E0E0;"><span class="pg">p.{{fill_page}}</span></td>
+              </tr>
+              <tr>
+                <td style="padding:7px 0;border-bottom:1px solid #E0E0E0;"><span class="font-grotesk" style="font-family:'Space Grotesk',Helvetica,sans-serif;font-size:14px;color:#111111;">Net Volume</span></td>
+                <td align="right" style="padding:7px 0;border-bottom:1px solid #E0E0E0;"><span class="font-mono" style="font-family:'Space Mono',monospace;font-size:14px;font-weight:700;color:#111111;">{{net_volume}} BCY</span></td>
+                <td align="right" style="padding:7px 0;border-bottom:1px solid #E0E0E0;"><span class="pg">—</span></td>
+              </tr>
+              <tr>
+                <td style="padding:7px 0;border-bottom:1px solid #E0E0E0;"><span class="font-grotesk" style="font-family:'Space Grotesk',Helvetica,sans-serif;font-size:14px;color:#111111;">Import Required</span></td>
+                <td align="right" style="padding:7px 0;border-bottom:1px solid #E0E0E0;"><span class="font-mono" style="font-family:'Space Mono',monospace;font-size:14px;font-weight:700;color:#111111;">{{import_volume}} CCY</span></td>
+                <td align="right" style="padding:7px 0;border-bottom:1px solid #E0E0E0;"><span class="pg">—</span></td>
+              </tr>
+              <tr>
+                <td style="padding:7px 0;"><span class="font-grotesk" style="font-family:'Space Grotesk',Helvetica,sans-serif;font-size:14px;color:#111111;">Export Required</span></td>
+                <td align="right" style="padding:7px 0;"><span class="font-mono" style="font-family:'Space Mono',monospace;font-size:14px;font-weight:700;color:#111111;">{{export_volume}} LCY</span></td>
+                <td align="right" style="padding:7px 0;"><span class="pg">—</span></td>
+              </tr>
+            </table>
+            <p style="margin:12px 0 0;"><span class="font-mono" style="font-family:'Space Mono',monospace;font-size:10px;color:#888888;">— = calculated by Dozer (not directly extracted from report)</span></p>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+
+  <!-- ═══ UNIT COSTS USED ═══ -->
+  <tr>
+    <td style="padding:0 32px 24px;" class="row-pad">
+      <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background-color:#F5F5F0;border-radius:8px;border:1px solid #D0D0D0;">
+        <tr>
+          <td style="padding:20px 24px 8px;">
+            <span class="font-mono" style="font-family:'Space Mono',monospace;font-size:10px;color:#FF5100;text-transform:uppercase;letter-spacing:2px;font-weight:700;">Unit Costs Applied</span>
+            <span class="font-mono" style="font-family:'Space Mono',monospace;font-size:10px;color:#888888;margin-left:8px;">(as submitted by you)</span>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:8px 24px 20px;">
+            <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
+              <tr>
+                <td style="padding:6px 0;border-bottom:1px solid #E0E0E0;"><span class="font-grotesk" style="font-family:'Space Grotesk',Helvetica,sans-serif;font-size:14px;color:#111111;">Cut per BCY</span></td>
+                <td align="right" style="padding:6px 0;border-bottom:1px solid #E0E0E0;"><span class="font-mono" style="font-family:'Space Mono',monospace;font-size:14px;font-weight:700;color:#111111;">${{cost_cut_bcy}}</span></td>
+              </tr>
+              <tr>
+                <td style="padding:6px 0;border-bottom:1px solid #E0E0E0;"><span class="font-grotesk" style="font-family:'Space Grotesk',Helvetica,sans-serif;font-size:14px;color:#111111;">Fill per CCY</span></td>
+                <td align="right" style="padding:6px 0;border-bottom:1px solid #E0E0E0;"><span class="font-mono" style="font-family:'Space Mono',monospace;font-size:14px;font-weight:700;color:#111111;">${{cost_fill_ccy}}</span></td>
+              </tr>
+              <tr>
+                <td style="padding:6px 0;border-bottom:1px solid #E0E0E0;"><span class="font-grotesk" style="font-family:'Space Grotesk',Helvetica,sans-serif;font-size:14px;color:#111111;">Mobilization</span></td>
+                <td align="right" style="padding:6px 0;border-bottom:1px solid #E0E0E0;"><span class="font-mono" style="font-family:'Space Mono',monospace;font-size:14px;font-weight:700;color:#111111;">${{cost_mobilization}}</span></td>
+              </tr>
+              <tr>
+                <td style="padding:6px 0;border-bottom:1px solid #E0E0E0;"><span class="font-grotesk" style="font-family:'Space Grotesk',Helvetica,sans-serif;font-size:14px;color:#111111;">Lime Treatment / ton</span></td>
+                <td align="right" style="padding:6px 0;border-bottom:1px solid #E0E0E0;"><span class="font-mono" style="font-family:'Space Mono',monospace;font-size:14px;font-weight:700;color:#111111;">${{cost_lime_ton}}</span></td>
+              </tr>
+              <tr>
+                <td style="padding:6px 0;border-bottom:1px solid #E0E0E0;"><span class="font-grotesk" style="font-family:'Space Grotesk',Helvetica,sans-serif;font-size:14px;color:#111111;">Import Material / CCY</span></td>
+                <td align="right" style="padding:6px 0;border-bottom:1px solid #E0E0E0;"><span class="font-mono" style="font-family:'Space Mono',monospace;font-size:14px;font-weight:700;color:#111111;">${{cost_import_ccy}}</span></td>
+              </tr>
+              <tr>
+                <td style="padding:6px 0;border-bottom:1px solid #E0E0E0;"><span class="font-grotesk" style="font-family:'Space Grotesk',Helvetica,sans-serif;font-size:14px;color:#111111;">Export Haul / LCY</span></td>
+                <td align="right" style="padding:6px 0;border-bottom:1px solid #E0E0E0;"><span class="font-mono" style="font-family:'Space Mono',monospace;font-size:14px;font-weight:700;color:#111111;">${{cost_export_lcy}}</span></td>
+              </tr>
+              <tr>
+                <td style="padding:6px 0;border-bottom:1px solid #E0E0E0;"><span class="font-grotesk" style="font-family:'Space Grotesk',Helvetica,sans-serif;font-size:14px;color:#111111;">Subgrade Prep / SY</span></td>
+                <td align="right" style="padding:6px 0;border-bottom:1px solid #E0E0E0;"><span class="font-mono" style="font-family:'Space Mono',monospace;font-size:14px;font-weight:700;color:#111111;">${{cost_subgrade_sy}}</span></td>
+              </tr>
+              <tr>
+                <td style="padding:6px 0;"><span class="font-grotesk" style="font-family:'Space Grotesk',Helvetica,sans-serif;font-size:14px;color:#111111;">Equipment / day</span></td>
+                <td align="right" style="padding:6px 0;"><span class="font-mono" style="font-family:'Space Mono',monospace;font-size:14px;font-weight:700;color:#111111;">${{cost_equipment_day}}</span></td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+
+  <!-- ═══ BID LINE ITEMS ═══ -->
+  <tr>
+    <td style="padding:0 32px 24px;" class="row-pad">
+      <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background-color:#F5F5F0;border-radius:8px;border:1px solid #D0D0D0;">
+        <tr>
+          <td style="padding:20px 24px 8px;">
+            <span class="font-mono" style="font-family:'Space Mono',monospace;font-size:10px;color:#FF5100;text-transform:uppercase;letter-spacing:2px;font-weight:700;">Bid Cost Breakdown</span>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:8px 24px 4px;">
+            <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
+              <tr>
+                <td style="padding:4px 0 8px;border-bottom:2px solid #D0D0D0;"><span class="font-mono" style="font-family:'Space Mono',monospace;font-size:9px;color:#888888;text-transform:uppercase;letter-spacing:1px;">Item</span></td>
+                <td align="center" style="padding:4px 0 8px;border-bottom:2px solid #D0D0D0;"><span class="font-mono" style="font-family:'Space Mono',monospace;font-size:9px;color:#888888;text-transform:uppercase;letter-spacing:1px;">Qty</span></td>
+                <td align="right" style="padding:4px 0 8px;border-bottom:2px solid #D0D0D0;"><span class="font-mono" style="font-family:'Space Mono',monospace;font-size:9px;color:#888888;text-transform:uppercase;letter-spacing:1px;">Amount</span></td>
+              </tr>
+              <tr>
+                <td style="padding:8px 0;border-bottom:1px solid #E0E0E0;"><span class="font-grotesk" style="font-family:'Space Grotesk',Helvetica,sans-serif;font-size:14px;color:#111111;">Excavation (Cut)</span></td>
+                <td align="center" style="padding:8px 0;border-bottom:1px solid #E0E0E0;"><span class="font-mono" style="font-family:'Space Mono',monospace;font-size:13px;color:#888888;">{{cut_volume_bcy}} BCY</span></td>
+                <td align="right" style="padding:8px 0;border-bottom:1px solid #E0E0E0;"><span class="font-mono" style="font-family:'Space Mono',monospace;font-size:14px;font-weight:700;color:#111111;">{{line_cut_cost}}</span></td>
+              </tr>
+              <tr>
+                <td style="padding:8px 0;border-bottom:1px solid #E0E0E0;"><span class="font-grotesk" style="font-family:'Space Grotesk',Helvetica,sans-serif;font-size:14px;color:#111111;">Fill &amp; Compaction</span></td>
+                <td align="center" style="padding:8px 0;border-bottom:1px solid #E0E0E0;"><span class="font-mono" style="font-family:'Space Mono',monospace;font-size:13px;color:#888888;">{{fill_volume_ccy}} CCY</span></td>
+                <td align="right" style="padding:8px 0;border-bottom:1px solid #E0E0E0;"><span class="font-mono" style="font-family:'Space Mono',monospace;font-size:14px;font-weight:700;color:#111111;">{{line_fill_cost}}</span></td>
+              </tr>
+              <tr>
+                <td style="padding:8px 0;border-bottom:1px solid #E0E0E0;"><span class="font-grotesk" style="font-family:'Space Grotesk',Helvetica,sans-serif;font-size:14px;color:#111111;">Mobilization</span></td>
+                <td align="center" style="padding:8px 0;border-bottom:1px solid #E0E0E0;"><span class="font-mono" style="font-family:'Space Mono',monospace;font-size:13px;color:#888888;">Lump Sum</span></td>
+                <td align="right" style="padding:8px 0;border-bottom:1px solid #E0E0E0;"><span class="font-mono" style="font-family:'Space Mono',monospace;font-size:14px;font-weight:700;color:#111111;">{{line_mobilization}}</span></td>
+              </tr>
+              <tr>
+                <td style="padding:8px 0;border-bottom:1px solid #E0E0E0;"><span class="font-grotesk" style="font-family:'Space Grotesk',Helvetica,sans-serif;font-size:14px;color:#111111;">Soil Treatment (Lime)</span></td>
+                <td align="center" style="padding:8px 0;border-bottom:1px solid #E0E0E0;"><span class="font-mono" style="font-family:'Space Mono',monospace;font-size:13px;color:#888888;">{{treatment_tons}} tons</span></td>
+                <td align="right" style="padding:8px 0;border-bottom:1px solid #E0E0E0;"><span class="font-mono" style="font-family:'Space Mono',monospace;font-size:14px;font-weight:700;color:#111111;">{{line_treatment_cost}}</span></td>
+              </tr>
+              <tr>
+                <td style="padding:8px 0;border-bottom:1px solid #E0E0E0;"><span class="font-grotesk" style="font-family:'Space Grotesk',Helvetica,sans-serif;font-size:14px;color:#111111;">Import Material</span></td>
+                <td align="center" style="padding:8px 0;border-bottom:1px solid #E0E0E0;"><span class="font-mono" style="font-family:'Space Mono',monospace;font-size:13px;color:#888888;">{{import_volume}} CCY</span></td>
+                <td align="right" style="padding:8px 0;border-bottom:1px solid #E0E0E0;"><span class="font-mono" style="font-family:'Space Mono',monospace;font-size:14px;font-weight:700;color:#111111;">{{line_import_cost}}</span></td>
+              </tr>
+              <tr>
+                <td style="padding:8px 0;border-bottom:1px solid #E0E0E0;"><span class="font-grotesk" style="font-family:'Space Grotesk',Helvetica,sans-serif;font-size:14px;color:#111111;">Export Haul</span></td>
+                <td align="center" style="padding:8px 0;border-bottom:1px solid #E0E0E0;"><span class="font-mono" style="font-family:'Space Mono',monospace;font-size:13px;color:#888888;">{{export_volume}} LCY</span></td>
+                <td align="right" style="padding:8px 0;border-bottom:1px solid #E0E0E0;"><span class="font-mono" style="font-family:'Space Mono',monospace;font-size:14px;font-weight:700;color:#111111;">{{line_export_cost}}</span></td>
+              </tr>
+              <tr>
+                <td style="padding:8px 0;border-bottom:1px solid #E0E0E0;"><span class="font-grotesk" style="font-family:'Space Grotesk',Helvetica,sans-serif;font-size:14px;color:#111111;">Subgrade Preparation</span></td>
+                <td align="center" style="padding:8px 0;border-bottom:1px solid #E0E0E0;"><span class="font-mono" style="font-family:'Space Mono',monospace;font-size:13px;color:#888888;">{{subgrade_area}} SY</span></td>
+                <td align="right" style="padding:8px 0;border-bottom:1px solid #E0E0E0;"><span class="font-mono" style="font-family:'Space Mono',monospace;font-size:14px;font-weight:700;color:#111111;">{{line_subgrade_cost}}</span></td>
+              </tr>
+              <tr>
+                <td colspan="2" style="padding:12px 0 8px;"><span class="font-grotesk" style="font-family:'Space Grotesk',Helvetica,sans-serif;font-size:16px;font-weight:700;color:#111111;">TOTAL ESTIMATE</span></td>
+                <td align="right" style="padding:12px 0 8px;"><span class="font-mono" style="font-family:'Space Mono',monospace;font-size:18px;font-weight:700;color:#FF5100;">{{total_bid_amount}}</span></td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+
+  <!-- ═══ DISCLAIMER ═══ -->
+  <tr>
+    <td style="padding:0 32px 24px;" class="row-pad">
+      <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="border-radius:8px;border-left:4px solid #FF5100;background-color:#FFF8F5;">
+        <tr>
+          <td style="padding:16px 20px;">
+            <span class="font-mono" style="font-family:'Space Mono',monospace;font-size:10px;color:#FF5100;text-transform:uppercase;letter-spacing:2px;font-weight:700;">Important Notice</span>
+            <p class="font-editorial" style="font-family:'DM Sans',Helvetica,sans-serif;font-size:13px;font-weight:300;color:#888888;margin:8px 0 0;line-height:1.6;">
+              This bid estimate is generated by AI-automated analysis and is intended as a preliminary estimate only.
+              It does not replace a stamped geotechnical engineering report and does not constitute engineering design, certification, or a binding bid.
+              A licensed Professional Engineer (PE) must review and approve all data before use in any contract or construction document.
+              Page references ("p.") indicate the source page in the uploaded PDF where each value was extracted — please use them to verify. Data Ronin assumes no liability for decisions based on this analysis.
+            </p>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+
+  <!-- ═══ CTA ═══ -->
+  <tr>
+    <td align="center" style="padding:0 32px 32px;" class="row-pad">
+      <p class="font-editorial" style="font-family:'DM Sans',Helvetica,sans-serif;font-size:15px;font-weight:300;color:#888888;margin:0 0 16px;line-height:1.5;">
+        Have questions about this estimate? Want a detailed breakdown or a revised bid with updated costs?
+      </p>
+      <!--[if mso]>
+      <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" href="mailto:roger@dataronin.ai?subject=Dozer%20Bid%20Estimate%20—%20{{project_name}}" style="height:48px;v-text-anchor:middle;width:280px;" arcsize="17%" strokecolor="#FF5100" fillcolor="#FF5100">
+      <center style="color:#ffffff;font-family:Arial,sans-serif;font-size:16px;font-weight:bold;">Reply to This Estimate</center>
+      </v:roundrect>
+      <![endif]-->
+      <!--[if !mso]><!-->
+      <a href="mailto:roger@dataronin.ai?subject=Dozer%20Bid%20Estimate%20—%20{{project_name}}" style="display:inline-block;padding:14px 40px;background-color:#FF5100;color:#ffffff;font-family:'Space Grotesk',Helvetica,sans-serif;font-size:16px;font-weight:700;text-decoration:none;border-radius:8px;">
+        Reply to This Estimate
+      </a>
+      <!--<![endif]-->
+    </td>
+  </tr>
+
+  <!-- ═══ SIGNATURE / FOOTER ═══ -->
+  <tr>
+    <td style="background-color:#111111;padding:32px;">
+      <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
+        <tr>
+          <td style="padding-bottom:16px;border-bottom:1px solid #333333;">
+            <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+              <tr>
+                <td style="vertical-align:top;padding-right:16px;">
+                  <img src="https://dataronin416.github.io/venditti/assets/roninlogo.png" alt="Data Ronin" width="48" style="display:block;">
+                </td>
+                <td style="vertical-align:top;">
+                  <span class="font-grotesk" style="font-family:'Space Grotesk',Helvetica,sans-serif;font-size:16px;font-weight:700;color:#FFFFFF;display:block;">Roger Mendoza</span>
+                  <span class="font-mono" style="font-family:'Space Mono',monospace;font-size:11px;color:#FFB300;text-transform:uppercase;letter-spacing:1px;display:block;margin-top:2px;">Founder — Data Ronin AI</span>
+                  <span class="font-editorial" style="font-family:'DM Sans',Helvetica,sans-serif;font-size:13px;font-weight:300;color:#888888;display:block;margin-top:4px;">
+                    roger@dataronin.ai &nbsp;|&nbsp; Austin, TX
+                  </span>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding-top:16px;">
+            <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
+              <tr>
+                <td>
+                  <span class="font-mono" style="font-family:'Space Mono',monospace;font-size:10px;color:#555555;text-transform:uppercase;letter-spacing:1px;">
+                    Powered by Dozer v3.1 — 14-Agent AI Pipeline
+                  </span>
+                </td>
+                <td align="right">
+                  <a href="https://www.dataronin.ai" style="font-family:'Space Mono',monospace;font-size:10px;color:#FF5100;text-decoration:none;text-transform:uppercase;letter-spacing:1px;">dataronin.ai</a>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding-top:12px;">
+            <span class="font-mono" style="font-family:'Space Mono',monospace;font-size:9px;color:#444444;line-height:1.5;">
+              &copy; 2026 Data Ronin AI &middot; Veteran-Owned &middot; Austin, TX<br>
+              This email and any attached files are confidential. If you received this in error, please delete it.
+            </span>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+
+</table>
+</td></tr>
+</table>
+
+</body>
+</html>
