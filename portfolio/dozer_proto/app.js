@@ -7,7 +7,7 @@
 // CONFIGURATION — UPDATE THESE WHEN MAKE.COM SCENARIO IS READY
 // ═══════════════════════════════════════════════════════════════
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxh0Kkt-DDLi2AfbpQ0gPW4d9GPdP-qBSfUWWuwY-EC5CbJQZlRcx4JqZNpe6VTe3Rh/exec";
-const MAKE_WEBHOOK_URL = "PLACEHOLDER_DOZER_POC_WEBHOOK"; // ← New Make.com scenario webhook goes here
+const MAKE_WEBHOOK_URL = "https://hook.us2.make.com/2lpcr8wr8mbsatb3ogpzx9dnsfaomsh4";
 
 // ── DOM refs ──
 const fileInput = document.getElementById("fileInput");
