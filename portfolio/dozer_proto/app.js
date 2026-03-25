@@ -6,7 +6,7 @@
 // ═══════════════════════════════════════════════════════════════
 // CONFIGURATION
 // ═══════════════════════════════════════════════════════════════
-const APPS_SCRIPT_URL = "https://us-central1-dozer-490317.cloudfunctions.net/dozer-signed-url";
+const APPS_SCRIPT_URL = "https://dozer-signed-url-7kysf2s6wa-uc.a.run.app";
 const PIPELINE_URL = "https://dozer-pipeline-782235828024.us-central1.run.app/run-pipeline";
 const GCS_BUCKET = "dozer-raw-reports-dozer-490317";
 
