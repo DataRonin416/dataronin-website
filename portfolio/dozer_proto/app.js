@@ -1,13 +1,14 @@
 // Dozer POC — app.js (Earthworks Bid Automation)
 // 1. Gets Signed URL from Google Apps Script
 // 2. Uploads directly to GCS
-// 3. Sends pricing + metadata to Make.com webhook for pipeline processing
+// 3. Sends pricing + metadata directly to Cloud Run (no Make.com)
 
 // ═══════════════════════════════════════════════════════════════
-// CONFIGURATION — UPDATE THESE WHEN MAKE.COM SCENARIO IS READY
+// CONFIGURATION
 // ═══════════════════════════════════════════════════════════════
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxh0Kkt-DDLi2AfbpQ0gPW4d9GPdP-qBSfUWWuwY-EC5CbJQZlRcx4JqZNpe6VTe3Rh/exec";
-const MAKE_WEBHOOK_URL = "https://hook.us2.make.com/2lpcr8wr8mbsatb3ogpzx9dnsfaomsh4";
+const APPS_SCRIPT_URL = "https://us-central1-dozer-490317.cloudfunctions.net/dozer-signed-url";
+const PIPELINE_URL = "https://dozer-pipeline-782235828024.us-central1.run.app/run-pipeline";
+const GCS_BUCKET = "dozer-raw-reports-dozer-490317";
 
 // ── DOM refs ──
 const fileInput = document.getElementById("fileInput");
@@ -79,10 +80,10 @@ if (form) {
       return;
     }
 
-    // Guard: check if webhook is configured
-    if (MAKE_WEBHOOK_URL === "PLACEHOLDER_DOZER_POC_WEBHOOK") {
+    // Guard: check if pipeline URL is configured
+    if (!PIPELINE_URL || PIPELINE_URL === "PLACEHOLDER") {
       statusMessage.style.color = "#FFB300";
-      statusMessage.textContent = "⚠ Webhook not configured yet. This is a demo — the Make.com scenario needs to be created first.";
+      statusMessage.textContent = "⚠ Pipeline URL not configured yet.";
       return;
     }
 
@@ -124,34 +125,37 @@ if (form) {
         console.warn("Browser reported upload error (likely CORS), proceeding:", uploadErr);
       }
 
-      // 3. NOTIFY MAKE.COM WITH PRICING DATA
+      // 3. SEND DIRECTLY TO CLOUD RUN
       submitBtn.textContent = "Step 3/3: Starting Analysis...";
 
       const pricing = collectPricing();
 
       const payload = {
-        filename: file.name,
+        gcs_path: `gs://${GCS_BUCKET}/${file.name}`,
         submitter_name: submitterNameEl ? submitterNameEl.value : "",
         submitter_email: submitterEmailEl ? submitterEmailEl.value : "",
+        unit_costs: pricing,
         source: "dozer_poc",
         version: "v3.1",
-        unit_costs: pricing,
         submitted_at: new Date().toISOString()
       };
 
-      const triggerResponse = await fetch(MAKE_WEBHOOK_URL, {
+      const triggerResponse = await fetch(PIPELINE_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
       });
 
       if (!triggerResponse.ok) {
-        throw new Error("Pipeline failed to start");
+        const errData = await triggerResponse.json().catch(() => ({}));
+        throw new Error(errData.error || "Pipeline failed to start");
       }
 
-      // SUCCESS
+      const responseData = await triggerResponse.json();
+
+      // SUCCESS — Cloud Run accepted the job (202)
       statusMessage.style.color = "#1E6B3A";
-      statusMessage.textContent = "✓ Report uploaded & analysis started! You'll receive an email with your bid estimate.";
+      statusMessage.innerHTML = `✓ Report uploaded &amp; analysis started!<br>Job ID: <code>${responseData.job_id || "N/A"}</code><br>You'll receive an email with your bid estimate when processing is complete.`;
 
       form.reset();
       updateFileList();
