@@ -150,14 +150,24 @@
 
   <!-- ===================== HERO ===================== -->
   <header class="relative pt-40 pb-20 px-6 overflow-hidden bg-charcoal">
-    <!-- Background video -->
+    <!-- Background video carousel -->
     <div class="absolute inset-0 z-0">
-      <video autoplay muted loop playsinline class="w-full h-full object-cover"
-             poster="assets/dozer.png">
-        <source src="Video/Drone_Construction_Site_AI_Video.mp4" type="video/mp4">
-      </video>
-      <!-- High opacity overlay so text remains readable -->
-      <div class="absolute inset-0 bg-white/85"></div>
+      <div id="videoCarousel" class="absolute inset-0">
+        <video autoplay muted loop playsinline class="absolute inset-0 w-full h-full object-cover transition-opacity duration-[2000ms]"
+               data-video-idx="0">
+          <source src="Video/Drone_Construction_Site_AI_Video.mp4" type="video/mp4">
+        </video>
+        <video muted loop playsinline class="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-[2000ms]"
+               data-video-idx="1">
+          <source src="Video/AI_Construction_Video_for_Bidding.mp4" type="video/mp4">
+        </video>
+        <video muted loop playsinline class="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-[2000ms]"
+               data-video-idx="2">
+          <source src="Video/Construction_Transformation_Drone_Video.mp4" type="video/mp4">
+        </video>
+      </div>
+      <!-- Overlay — more visible video (70% instead of 85%) -->
+      <div class="absolute inset-0 bg-white/70"></div>
     </div>
     <div class="max-w-5xl mx-auto text-center relative z-10">
 
@@ -627,6 +637,22 @@
 
   <!-- ===================== JAVASCRIPT ===================== -->
   <script>
+    // Video carousel — rotate every 12 seconds with crossfade
+    (function() {
+      const videos = document.querySelectorAll('#videoCarousel video');
+      if (videos.length <= 1) return;
+      let current = 0;
+      // Preload all videos
+      videos.forEach(v => { v.load(); });
+      setInterval(() => {
+        const next = (current + 1) % videos.length;
+        videos[next].play();
+        videos[current].style.opacity = '0';
+        videos[next].style.opacity = '1';
+        current = next;
+      }, 12000);
+    })();
+
     // Nav scroll effect
     const nav = document.getElementById('mainNav');
     window.addEventListener('scroll', () => {
