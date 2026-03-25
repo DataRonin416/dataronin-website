@@ -637,20 +637,23 @@
 
   <!-- ===================== JAVASCRIPT ===================== -->
   <script>
-    // Video carousel — rotate every 12 seconds with crossfade
+    // Video carousel — play each video once, then move to next (no repeats until all played)
     (function() {
       const videos = document.querySelectorAll('#videoCarousel video');
       if (videos.length <= 1) return;
       let current = 0;
-      // Preload all videos
-      videos.forEach(v => { v.load(); });
-      setInterval(() => {
-        const next = (current + 1) % videos.length;
-        videos[next].play();
-        videos[current].style.opacity = '0';
-        videos[next].style.opacity = '1';
-        current = next;
-      }, 12000);
+      // Remove loop from all videos so they play once
+      videos.forEach(v => { v.removeAttribute('loop'); v.load(); });
+      // When current video ends, crossfade to next
+      videos.forEach((v, idx) => {
+        v.addEventListener('ended', () => {
+          const next = (idx + 1) % videos.length;
+          videos[next].currentTime = 0;
+          videos[next].play();
+          v.style.opacity = '0';
+          videos[next].style.opacity = '1';
+        });
+      });
     })();
 
     // Nav scroll effect
