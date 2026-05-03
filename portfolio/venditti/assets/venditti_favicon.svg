@@ -1,0 +1,17 @@
+<svg width="64" height="64" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- Background circle -->
+  <circle cx="32" cy="32" r="31" fill="#e74c3c"/>
+  
+  <!-- V Icon centered and scaled for small size -->
+  <g id="v-icon" transform="translate(16, 12)">
+    <!-- Outer V shape - simplified for small size -->
+    <path d="M 0 0 L 16 40 L 32 0 L 27 0 L 16 25 L 5 0 Z" 
+          fill="#ffffff" 
+          stroke="#ffffff" 
+          stroke-width="0.5"/>
+    
+    <!-- Inner accent -->
+    <path d="M 8 0 L 16 20 L 24 0 L 20 0 L 16 10 L 12 0 Z" 
+          fill="rgba(255,255,255,0.5)"/>
+  </g>
+</svg>
