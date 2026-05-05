@@ -1,0 +1,250 @@
+*{margin:0;padding:0;box-sizing:border-box}
+
+body{
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
+  line-height:1.6;
+  color:#333;
+  background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);
+  min-height:100vh;
+}
+
+.container{max-width:1200px;margin:0 auto;padding:20px}
+
+header{
+  text-align:center;
+  padding:40px 20px;
+  background:rgba(255,255,255,0.95);
+  border-radius:20px;
+  margin-bottom:40px;
+  box-shadow:0 20px 60px rgba(0,0,0,0.3);
+}
+
+.logoBadge{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:18px 22px;
+  border-radius:18px;
+  background:radial-gradient(circle at 30% 30%, #0f2a64, #0b1022);
+  border:1px solid rgba(255,255,255,0.12);
+  box-shadow:0 16px 36px rgba(0,0,0,0.35);
+  margin-bottom:26px;
+}
+.logoImg{
+  max-width:320px;
+  height:auto;
+  display:block;
+  filter:drop-shadow(0 8px 12px rgba(0,0,0,0.45));
+}
+
+.hero-illustration{
+  max-width:600px;
+  margin:30px auto;
+  animation:float 3s ease-in-out infinite;
+}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+
+h1{
+  font-size:3rem;
+  margin-bottom:20px;
+  font-weight:700;
+  background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+
+.tagline{font-size:1.5rem;color:#555;margin-bottom:30px;font-weight:300}
+.hero-text{font-size:1.2rem;color:#666;max-width:800px;margin:0 auto}
+
+.main-content{
+  background:white;
+  border-radius:20px;
+  padding:50px;
+  margin-bottom:40px;
+  box-shadow:0 20px 60px rgba(0,0,0,0.3);
+}
+
+.features-section{margin-bottom:50px}
+.features-section h2{
+  font-size:2.2rem;
+  color:#2c3e50;
+  margin-bottom:30px;
+  text-align:center;
+}
+
+.features-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+  gap:30px;
+  margin-bottom:40px;
+}
+
+.feature-card{
+  background:linear-gradient(135deg,#f5f7fa 0%,#c3cfe2 100%);
+  padding:30px;
+  border-radius:15px;
+  box-shadow:0 5px 15px rgba(0,0,0,0.1);
+  transition:transform .25s ease, box-shadow .25s ease, filter .25s ease;
+  position:relative;
+  overflow:hidden;
+  will-change:transform;
+}
+.feature-card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 12px 28px rgba(0,0,0,0.18);
+  filter:saturate(1.05);
+}
+
+.feature-number{
+  display:inline-block;
+  width:40px;height:40px;
+  background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);
+  color:white;border-radius:50%;
+  text-align:center;
+  line-height:40px;
+  font-weight:bold;
+  position:absolute;
+  top:20px;right:20px;
+}
+
+.feature-card h3{color:#2c3e50;margin-bottom:10px;font-size:1.3rem}
+.feature-card p{color:#555}
+
+.deliverables{
+  background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);
+  color:white;
+  padding:40px;
+  border-radius:15px;
+  margin-bottom:40px;
+}
+.deliverables h3{font-size:1.8rem;margin-bottom:20px}
+.deliverables ul{list-style:none;padding-left:0}
+.deliverables li{
+  padding:10px 0 10px 30px;
+  position:relative;
+  font-size:1.1rem;
+}
+.deliverables li:before{
+  content:"✓";
+  position:absolute;left:0;
+  font-weight:bold;font-size:1.3rem;
+}
+.center{text-align:center}
+.speed-badge{
+  display:inline-block;
+  background:linear-gradient(135deg,#f093fb 0%,#f5576c 100%);
+  color:white;
+  padding:10px 25px;
+  border-radius:50px;
+  font-weight:bold;
+  font-size:1.1rem;
+  margin-top:30px;
+}
+
+.upload-section{
+  background:linear-gradient(135deg,#f093fb 0%,#f5576c 100%);
+  padding:50px;
+  border-radius:15px;
+  text-align:center;
+  margin-bottom:40px;
+}
+.upload-section h2{color:white;font-size:2rem;margin-bottom:25px}
+
+.upload-zone{
+  background:rgba(255,255,255,0.95);
+  border:3px dashed #667eea;
+  border-radius:15px;
+  padding:60px 40px;
+  cursor:pointer;
+  transition:all .25s ease;
+  position:relative;
+}
+.upload-zone:hover{
+  background:white;
+  border-color:#764ba2;
+  transform:scale(1.02);
+}
+.upload-zone.dragover{
+  background:#f0f4ff;
+  border-color:#4c6ef5;
+}
+.upload-text{font-size:1.3rem;color:#2c3e50;margin-bottom:10px;font-weight:600}
+.upload-subtext{color:#666;font-size:1rem}
+#fileInput{opacity:0;position:absolute;z-index:-1}
+
+.btn-primary{
+  background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);
+  color:white;
+  border:none;
+  padding:15px 40px;
+  font-size:1.2rem;
+  border-radius:50px;
+  cursor:pointer;
+  transition:transform .2s ease, box-shadow .2s ease;
+  box-shadow:0 5px 15px rgba(102,126,234,0.4);
+  margin-top:20px;
+}
+.btn-primary:hover{
+  transform:translateY(-2px);
+  box-shadow:0 10px 24px rgba(102,126,234,0.6);
+}
+
+.file-list{margin-top:20px;text-align:left}
+.file-item{
+  background:white;
+  padding:15px;
+  margin:10px 0;
+  border-radius:8px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  box-shadow:0 2px 5px rgba(0,0,0,0.1);
+}
+.file-name{font-weight:600;color:#2c3e50}
+.file-size{color:#666;font-size:0.9rem}
+
+.additionalFields{
+  display:none;
+  margin-top:30px;
+  max-width:500px;
+  margin-left:auto;
+  margin-right:auto;
+}
+.additionalFields input{
+  width:100%;
+  padding:15px;
+  border:2px solid #667eea;
+  border-radius:10px;
+  font-size:1rem;
+}
+.field{margin-bottom:20px}
+.statusMessage{margin-top:18px;text-align:center;font-weight:bold}
+
+.disclaimer{
+  background:#f8f9fa;
+  padding:40px;
+  border-radius:15px;
+  border-left:5px solid #dc3545;
+  margin-top:40px;
+}
+.disclaimer h3{
+  color:#dc3545;
+  font-size:1.5rem;
+  margin-bottom:20px;
+  font-weight:700;
+}
+.disclaimer p{color:#495057;margin-bottom:15px;line-height:1.8}
+
+/* Reveal micro-animation */
+.reveal{opacity:0;transform:translateY(10px);transition:opacity .55s ease, transform .55s ease}
+.reveal.is-visible{opacity:1;transform:none}
+
+@media (max-width:768px){
+  h1{font-size:2rem}
+  .tagline{font-size:1.2rem}
+  .main-content{padding:30px 20px}
+  .features-grid{grid-template-columns:1fr}
+  .upload-section{padding:30px 20px}
+  .upload-zone{padding:40px 20px}
+}
