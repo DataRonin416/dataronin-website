@@ -598,7 +598,7 @@
       bottom: 28px;
       right: 28px;
       z-index: 9999;
-      background: #C8102E;
+      background: #1A1A1A;
       border: none;
       border-radius: 20px;
       width: 64px;
@@ -607,12 +607,12 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 6px 28px rgba(200,16,46,.5), 0 2px 8px rgba(0,0,0,.25);
+      box-shadow: 0 6px 28px rgba(200,16,46,.45), 0 2px 8px rgba(0,0,0,.35);
       transition: transform 0.25s cubic-bezier(.34,1.56,.64,1), box-shadow 0.2s;
       animation: drPop 0.6s cubic-bezier(.34,1.56,.64,1) both;
       padding: 0;
     }
-    #dr-toggle-btn:hover { transform: scale(1.1) translateY(-3px); box-shadow: 0 12px 40px rgba(200,16,46,.7); }
+    #dr-toggle-btn:hover { transform: scale(1.1) translateY(-3px); box-shadow: 0 12px 40px rgba(200,16,46,.65); }
 
     /* Pulse ring */
     #dr-toggle-btn::before {
@@ -726,14 +726,14 @@
 
   <!-- Toggle Button — Dozer logo on red -->
   <button id="dr-toggle-btn" onclick="drToggle()" aria-label="Open Dozer AI Assistant">
-    <img src="assets/dozer.png" alt="Dozer" style="width:46px;height:46px;object-fit:contain;filter:brightness(0) invert(1);">
+    <img src="assets/dozer.png" alt="Dozer" style="width:46px;height:46px;object-fit:contain;border-radius:6px;">
   </button>
 
   <!-- Chat Panel -->
   <div id="dr-chat-panel" role="dialog" aria-label="Dozer Assistant">
     <div id="dr-chat-header">
       <div id="dr-chat-header-left">
-        <img src="assets/dozer.png" alt="Dozer" style="filter:brightness(0) invert(1);">
+        <img src="assets/dozer.png" alt="Dozer" style="border-radius:4px;">
         <div>
           <div class="dr-title">Dozer Assistant</div>
           <div class="dr-sub">Powered by Data Ronin AI</div>
