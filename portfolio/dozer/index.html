@@ -590,29 +590,29 @@
   <!-- Real upload / submission logic -->
   <script src="app.js"></script>
 
-  <!-- ===================== DATARONIN CHAT WIDGET ===================== -->
+  <!-- ===================== DOZER CHAT WIDGET ===================== -->
   <style>
-    /* Floating toggle button — rounded square robot */
+    /* Floating toggle button — Dozer red rounded square */
     #dr-toggle-btn {
       position: fixed;
       bottom: 28px;
       right: 28px;
       z-index: 9999;
-      background: rgb(120, 113, 108);
+      background: #C8102E;
       border: none;
-      border-radius: 20px;          /* rounded square / superellipse */
+      border-radius: 20px;
       width: 64px;
       height: 64px;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 6px 28px rgba(120,113,108,.6), 0 2px 8px rgba(0,0,0,.25);
+      box-shadow: 0 6px 28px rgba(200,16,46,.5), 0 2px 8px rgba(0,0,0,.25);
       transition: transform 0.25s cubic-bezier(.34,1.56,.64,1), box-shadow 0.2s;
       animation: drPop 0.6s cubic-bezier(.34,1.56,.64,1) both;
       padding: 0;
     }
-    #dr-toggle-btn:hover { transform: scale(1.1) translateY(-3px); box-shadow: 0 12px 40px rgba(120,113,108,.75); }
+    #dr-toggle-btn:hover { transform: scale(1.1) translateY(-3px); box-shadow: 0 12px 40px rgba(200,16,46,.7); }
 
     /* Pulse ring */
     #dr-toggle-btn::before {
@@ -645,15 +645,17 @@
 
     /* Header */
     #dr-chat-header {
-      background: rgb(26, 26, 26);
-      padding: 16px 20px;
+      background: #1A1A1A;
+      padding: 14px 20px;
       display: flex;
       justify-content: space-between;
       align-items: center;
       flex-shrink: 0;
     }
+    #dr-chat-header-left { display: flex; align-items: center; gap: 12px; }
+    #dr-chat-header-left img { width: 36px; height: 36px; object-fit: contain; border-radius: 8px; background: #C8102E; padding: 4px; }
     #dr-chat-header .dr-title { color: #fff; font-weight: 700; font-size: 14px; letter-spacing: 0.03em; }
-    #dr-chat-header .dr-sub { color: rgb(120,113,108); font-size: 11px; text-transform: uppercase; letter-spacing: 0.12em; font-weight: 600; margin-top: 2px; }
+    #dr-chat-header .dr-sub { color: #C8102E; font-size: 11px; text-transform: uppercase; letter-spacing: 0.12em; font-weight: 600; margin-top: 2px; }
     #dr-close-btn { background: none; border: none; color: rgba(255,255,255,0.6); font-size: 18px; cursor: pointer; line-height: 1; padding: 2px 6px; border-radius: 6px; transition: color 0.15s, background 0.15s; }
     #dr-close-btn:hover { color: #fff; background: rgba(255,255,255,0.1); }
 
@@ -675,8 +677,8 @@
       font-size: 13.5px;
       line-height: 1.5;
     }
-    .dr-msg-bot   { background: rgb(26,26,26); color: #fff; border-radius: 14px 14px 14px 4px; align-self: flex-start; }
-    .dr-msg-user  { background: rgb(120,113,108); color: #fff; border-radius: 14px 14px 4px 14px; align-self: flex-end; }
+    .dr-msg-bot   { background: #1A1A1A; color: #fff; border-radius: 14px 14px 14px 4px; align-self: flex-start; }
+    .dr-msg-user  { background: #C8102E; color: #fff; border-radius: 14px 14px 4px 14px; align-self: flex-end; }
     .dr-msg-error { background: #fff; color: #999; border: 1px solid rgb(231,229,228); font-size: 12px; border-radius: 10px; align-self: flex-start; }
     .dr-typing    { background: rgb(231,229,228); color: #555; border-radius: 14px 14px 14px 4px; align-self: flex-start; padding: 10px 16px; font-size: 18px; letter-spacing: 4px; }
 
@@ -699,9 +701,9 @@
       transition: border-color 0.15s, box-shadow 0.15s;
       background: #F9F8F6;
     }
-    #dr-input:focus { border-color: rgb(120,113,108); box-shadow: 0 0 0 3px rgba(120,113,108,.15); }
+    #dr-input:focus { border-color: #C8102E; box-shadow: 0 0 0 3px rgba(200,16,46,.12); }
     #dr-send-btn {
-      background: rgb(26,26,26);
+      background: #C8102E;
       color: #fff;
       border: none;
       border-radius: 50%;
@@ -715,24 +717,27 @@
       flex-shrink: 0;
       transition: background 0.15s, transform 0.15s;
     }
-    #dr-send-btn:hover { background: rgb(120,113,108); transform: scale(1.08); }
+    #dr-send-btn:hover { background: #a50d25; transform: scale(1.08); }
 
     @keyframes drPop { from { opacity:0; transform:scale(.4) } to { opacity:1; transform:scale(1) } }
     @keyframes drSlideIn { from { opacity:0; transform:scale(.92) translateY(12px) } to { opacity:1; transform:scale(1) translateY(0) } }
-    @keyframes drPulse { 0%{box-shadow:0 0 0 0 rgba(120,113,108,.6)} 70%{box-shadow:0 0 0 20px rgba(120,113,108,0)} 100%{box-shadow:0 0 0 0 rgba(120,113,108,0)} }
+    @keyframes drPulse { 0%{box-shadow:0 0 0 0 rgba(200,16,46,.6)} 70%{box-shadow:0 0 0 20px rgba(200,16,46,0)} 100%{box-shadow:0 0 0 0 rgba(200,16,46,0)} }
   </style>
 
-  <!-- Toggle Button — rounded square with brand favicon -->
-  <button id="dr-toggle-btn" onclick="drToggle()" aria-label="Open chat with DataRonin AI">
-    <img src="favicon.png" alt="Chat" style="width:46px;height:46px;object-fit:contain;border-radius:6px;">
+  <!-- Toggle Button — Dozer logo on red -->
+  <button id="dr-toggle-btn" onclick="drToggle()" aria-label="Open Dozer AI Assistant">
+    <img src="assets/dozer.png" alt="Dozer" style="width:46px;height:46px;object-fit:contain;filter:brightness(0) invert(1);">
   </button>
 
   <!-- Chat Panel -->
-  <div id="dr-chat-panel" role="dialog" aria-label="DataRonin Chat">
+  <div id="dr-chat-panel" role="dialog" aria-label="Dozer Assistant">
     <div id="dr-chat-header">
-      <div>
-        <div class="dr-title">Dozer Assistant</div>
-        <div class="dr-sub">Powered by Data Ronin AI</div>
+      <div id="dr-chat-header-left">
+        <img src="assets/dozer.png" alt="Dozer" style="filter:brightness(0) invert(1);">
+        <div>
+          <div class="dr-title">Dozer Assistant</div>
+          <div class="dr-sub">Powered by Data Ronin AI</div>
+        </div>
       </div>
       <button id="dr-close-btn" onclick="drToggle()" aria-label="Close chat">✕</button>
     </div>
