@@ -453,9 +453,55 @@
     .col-headers { display: none; }
     .meta-fields { grid-template-columns: 1fr; }
   }
+
+  /* Login overlay */
+  #loginOverlay {
+    position: fixed; inset: 0;
+    background: var(--paper);
+    z-index: 500;
+    display: flex; align-items: center; justify-content: center;
+    padding: 24px;
+  }
+  .login-card {
+    background: var(--paper-2);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 36px 32px;
+    width: 100%; max-width: 380px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+  }
+  .login-brand { display: flex; align-items: center; gap: 12px; margin-bottom: 28px; }
+  .login-title { font-family: 'IBM Plex Mono', monospace; font-size: 14px; font-weight: 600; letter-spacing: 0.10em; text-transform: uppercase; color: var(--ink); }
+  .login-sub { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--ink-3); margin-top: 3px; letter-spacing: 0.12em; text-transform: uppercase; }
+  .login-card label { display: block; font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-3); margin-top: 14px; margin-bottom: 5px; }
+  .login-card input { width: 100%; padding: 10px 12px; background: var(--paper); border: 1px solid var(--line); color: var(--ink); font-size: 14px; border-radius: 4px; font-family: inherit; }
+  .login-card input:focus { border-color: var(--orange); outline: none; }
+  .login-btn { width: 100%; margin-top: 20px; background: var(--orange); color: var(--paper); border: none; padding: 12px; border-radius: 4px; font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 600; letter-spacing: 0.10em; text-transform: uppercase; cursor: pointer; }
+  .login-btn:hover { background: #C9A66E; }
+  .login-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .login-error { margin-top: 12px; padding: 8px 12px; background: var(--red-soft); border: 1px solid var(--red); border-radius: 4px; color: var(--ink); font-size: 12px; display: none; }
+  .login-error.show { display: block; }
 </style>
 </head>
 <body>
+
+<div id="loginOverlay">
+  <div class="login-card">
+    <div class="login-brand">
+      <div class="brand-mark"></div>
+      <div>
+        <div class="login-title">Dozer · Sign In</div>
+        <div class="login-sub">Estimator review access</div>
+      </div>
+    </div>
+    <label>Username</label>
+    <input type="text" id="loginUser" autocomplete="username" placeholder="estimator">
+    <label>Password</label>
+    <input type="password" id="loginPass" autocomplete="current-password">
+    <button class="login-btn" id="loginBtn" onclick="doLogin()">Sign In</button>
+    <div class="login-error" id="loginErr"></div>
+  </div>
+</div>
 
 <div class="page-header">
   <div class="header-top">
@@ -467,6 +513,7 @@
       </div>
     </div>
     <div class="header-actions">
+      <a id="viewPdfBtn" href="#" target="_blank" rel="noopener" class="btn btn-ghost" style="display:none;text-decoration:none">↗ View Original PDF</a>
       <button class="btn btn-ghost" onclick="exportCSV()">↓ Export CSV</button>
       <button class="btn btn-ghost" onclick="saveLocal()">💾 Save Draft</button>
       <button class="btn btn-submit" onclick="openSubmit()">✉ Submit Review</button>
@@ -625,15 +672,62 @@
 <div class="toast" id="toast"></div>
 
 <script>
-// ── Config (overridable via build) ─────────────────────────────
+// ── Config ─────────────────────────────────────────────────────
 const API_BASE = 'https://dozer-pipeline-7kysf2s6wa-uc.a.run.app';
+const SESSION_KEY = 'dozer.session.v1';
+
+// ── Auth ──
+async function doLogin() {
+  const u = document.getElementById('loginUser').value.trim();
+  const p = document.getElementById('loginPass').value;
+  const errEl = document.getElementById('loginErr');
+  const btn = document.getElementById('loginBtn');
+  errEl.classList.remove('show');
+  btn.disabled = true; btn.textContent = 'Signing in…';
+  try {
+    const res = await fetch(`${API_BASE}/api/login`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({username: u, password: p}),
+    });
+    if (!res.ok) {
+      const j = await res.json().catch(() => ({}));
+      throw new Error(j.error || `HTTP ${res.status}`);
+    }
+    const data = await res.json();
+    localStorage.setItem(SESSION_KEY, JSON.stringify({token: data.token, role: data.role, exp: Date.now() + data.expires_in_hours * 3600 * 1000}));
+    state.sessionToken = data.token;
+    document.getElementById('loginOverlay').style.display = 'none';
+    loadJob();
+  } catch (err) {
+    errEl.textContent = err.message;
+    errEl.classList.add('show');
+  } finally {
+    btn.disabled = false; btn.textContent = 'Sign In';
+  }
+}
+
+function checkSession() {
+  const stored = localStorage.getItem(SESSION_KEY);
+  if (!stored) return null;
+  try {
+    const s = JSON.parse(stored);
+    if (Date.now() > s.exp) return null;
+    return s;
+  } catch { return null; }
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && document.getElementById('loginOverlay').style.display !== 'none') doLogin();
+});
 
 // ── State ──────────────────────────────────────────────────────
 let state = {
   jobId: null,
-  token: null,
+  token: null,          // job-specific access token from URL
+  sessionToken: null,   // login session token
   pdfUrl: null,
-  fields: [],          // [{field_id, field_name, category, tier, description, ai_value, status, notes}]
+  fields: [],
   fieldsByCategory: {},
   loaded: false,
 };
@@ -691,12 +785,19 @@ async function loadJob() {
     return;
   }
   try {
-    const res = await fetch(`${API_BASE}/api/review/${state.jobId}?token=${encodeURIComponent(state.token)}`);
+    const res = await fetch(`${API_BASE}/api/review/${state.jobId}?token=${encodeURIComponent(state.token)}`, {
+      headers: state.sessionToken ? {'Authorization': `Bearer ${state.sessionToken}`} : {},
+    });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
     state.fields = data.fields || [];
-    state.pdfUrl = data.pdf_url;
+    state.pdfUrl = data.pdf_url || '';
     document.getElementById('projectName').value = data.project_name || '';
+    if (state.pdfUrl) {
+      const btn = document.getElementById('viewPdfBtn');
+      btn.href = state.pdfUrl;
+      btn.style.display = '';
+    }
     state.loaded = true;
     renderFields();
   } catch (err) {
@@ -907,7 +1008,10 @@ async function doSubmit() {
     try {
       const res = await fetch(`${API_BASE}/api/review/${state.jobId}/submit?token=${encodeURIComponent(state.token)}`, {
         method: 'POST',
-        headers: {'Content-Type': 'application/json'},
+        headers: {
+          'Content-Type': 'application/json',
+          ...(state.sessionToken ? {'Authorization': `Bearer ${state.sessionToken}`} : {}),
+        },
         body: JSON.stringify(payload),
       });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -948,7 +1052,21 @@ function showToast(msg) {
 }
 
 // ── Init ──────────────────────────────────────────────────────
-loadJob();
+(function init() {
+  if (isMock) {
+    document.getElementById('loginOverlay').style.display = 'none';
+    loadJob();
+    return;
+  }
+  const s = checkSession();
+  if (s) {
+    state.sessionToken = s.token;
+    document.getElementById('loginOverlay').style.display = 'none';
+    loadJob();
+  } else {
+    document.getElementById('loginUser').focus();
+  }
+})();
 </script>
 </body>
 </html>

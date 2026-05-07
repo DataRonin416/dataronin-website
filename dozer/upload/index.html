@@ -240,9 +240,83 @@
     color: var(--ink);
     font-size: 13px;
   }
+
+  /* Login overlay */
+  #loginOverlay {
+    position: fixed; inset: 0;
+    background: var(--paper);
+    z-index: 500;
+    display: flex; align-items: center; justify-content: center;
+    padding: 24px;
+  }
+  .login-card {
+    background: var(--paper-2);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 36px 32px;
+    width: 100%; max-width: 380px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+  }
+  .login-brand { display: flex; align-items: center; gap: 12px; margin-bottom: 28px; }
+  .login-title {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 14px; font-weight: 600;
+    letter-spacing: 0.10em; text-transform: uppercase;
+    color: var(--ink);
+  }
+  .login-sub {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px; color: var(--ink-3);
+    margin-top: 3px;
+    letter-spacing: 0.12em; text-transform: uppercase;
+  }
+  .login-card label { margin-top: 14px; }
+  .login-card input { width: 100%; padding: 10px 12px; background: var(--paper); border: 1px solid var(--line); color: var(--ink); font-size: 14px; border-radius: 4px; font-family: inherit; }
+  .login-card input:focus { border-color: var(--orange); }
+  .login-btn {
+    width: 100%; margin-top: 20px;
+    background: var(--orange); color: var(--paper);
+    border: none; padding: 12px; border-radius: 4px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px; font-weight: 600;
+    letter-spacing: 0.10em; text-transform: uppercase;
+    cursor: pointer;
+  }
+  .login-btn:hover { background: #C9A66E; }
+  .login-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .login-error {
+    margin-top: 12px;
+    padding: 8px 12px;
+    background: var(--red-soft);
+    border: 1px solid var(--red);
+    border-radius: 4px;
+    color: var(--ink);
+    font-size: 12px;
+    display: none;
+  }
+  .login-error.show { display: block; }
 </style>
 </head>
 <body>
+
+<!-- Login overlay (admin only) -->
+<div id="loginOverlay">
+  <div class="login-card">
+    <div class="login-brand">
+      <div class="brand-mark"></div>
+      <div>
+        <div class="login-title">Dozer · Sign In</div>
+        <div class="login-sub">Admin access</div>
+      </div>
+    </div>
+    <label>Username</label>
+    <input type="text" id="loginUser" autocomplete="username" placeholder="admin">
+    <label>Password</label>
+    <input type="password" id="loginPass" autocomplete="current-password">
+    <button class="login-btn" id="loginBtn" onclick="doLogin()">Sign In</button>
+    <div class="login-error" id="loginErr"></div>
+  </div>
+</div>
 
 <div class="page-header">
   <div class="header-top">
@@ -281,32 +355,9 @@
     </div>
   </div>
 
-  <!-- Optional unit costs -->
-  <div class="panel">
-    <div class="panel-title">2 · Unit costs (optional — pipeline defaults if empty)</div>
-    <div class="form-grid">
-      <div>
-        <label>Cut ($ / BCY)</label>
-        <input type="number" step="0.01" id="costCut" placeholder="4.50">
-      </div>
-      <div>
-        <label>Fill ($ / CCY)</label>
-        <input type="number" step="0.01" id="costFill" placeholder="7.50">
-      </div>
-      <div>
-        <label>Lime treatment ($ / SY)</label>
-        <input type="number" step="0.01" id="costLime" placeholder="3.25">
-      </div>
-      <div>
-        <label>Strip / clear ($ / SY)</label>
-        <input type="number" step="0.01" id="costStrip" placeholder="0.85">
-      </div>
-    </div>
-  </div>
-
   <!-- Drop zone -->
   <div class="panel">
-    <div class="panel-title">3 · Drop PDF</div>
+    <div class="panel-title">2 · Drop PDF</div>
     <div id="dropZone" onclick="document.getElementById('fileInput').click()">
       <div class="icon">
         <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
@@ -319,7 +370,7 @@
 
   <!-- Queue -->
   <div class="panel" id="queuePanel" style="display:none">
-    <div class="panel-title">4 · Upload queue</div>
+    <div class="panel-title">3 · Upload queue</div>
     <ul class="queue" id="queue"></ul>
   </div>
 
@@ -335,14 +386,13 @@
           <label>Cloud Run URL</label>
           <input type="url" id="crUrl" placeholder="https://dozer-pipeline-…run.app">
         </div>
+      </div>
+      <div style="margin-top:14px;display:flex;justify-content:space-between;align-items:center;gap:8px">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--ink-3);letter-spacing:0.08em">API key fetched from backend after login</div>
         <div>
-          <label>API Key</label>
-          <input type="text" id="apiKey" placeholder="X-API-Key">
+          <button class="btn btn-ghost" onclick="signOut()">Sign Out</button>
+          <button class="btn btn-ghost" onclick="saveCfg()">Save</button>
         </div>
-      </div>
-      <div style="margin-top:14px;text-align:right">
-        <button class="btn btn-ghost" onclick="saveCfg()">Save Settings</button>
-      </div>
     </div>
   </details>
 </div>
@@ -350,12 +400,72 @@
 <div class="toast" id="toast"></div>
 
 <script>
-// ── Pre-baked defaults (URLs only — API key NOT baked, paste in Settings on first use) ──
+// ── Pre-baked URLs (API key NOT baked — fetched from backend after login) ──
 const DEFAULTS = {
   cfUrl: 'https://dozer-signed-url-7kysf2s6wa-uc.a.run.app',
   crUrl: 'https://dozer-pipeline-7kysf2s6wa-uc.a.run.app',
   apiKey: '',
 };
+const SESSION_KEY = 'dozer.session.v1';
+
+// ── Auth ──
+async function doLogin() {
+  const u = document.getElementById('loginUser').value.trim();
+  const p = document.getElementById('loginPass').value;
+  const errEl = document.getElementById('loginErr');
+  const btn = document.getElementById('loginBtn');
+  errEl.classList.remove('show');
+  btn.disabled = true; btn.textContent = 'Signing in…';
+  try {
+    const res = await fetch(`${DEFAULTS.crUrl}/api/login`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({username: u, password: p}),
+    });
+    if (!res.ok) {
+      const j = await res.json().catch(() => ({}));
+      throw new Error(j.error || `HTTP ${res.status}`);
+    }
+    const data = await res.json();
+    if (data.role !== 'admin') throw new Error('Admin access required for this page');
+    localStorage.setItem(SESSION_KEY, JSON.stringify({token: data.token, role: data.role, exp: Date.now() + data.expires_in_hours * 3600 * 1000}));
+    await fetchUploadCredentials(data.token);
+    document.getElementById('loginOverlay').style.display = 'none';
+    showToast('✓ Signed in as admin');
+  } catch (err) {
+    errEl.textContent = err.message;
+    errEl.classList.add('show');
+  } finally {
+    btn.disabled = false; btn.textContent = 'Sign In';
+  }
+}
+
+async function fetchUploadCredentials(token) {
+  const res = await fetch(`${DEFAULTS.crUrl}/api/upload-credentials`, {
+    headers: {'Authorization': `Bearer ${token}`},
+  });
+  if (!res.ok) throw new Error('Failed to load credentials');
+  const data = await res.json();
+  cfg.apiKey = data.api_key;
+  cfg.cfUrl = data.cf_url || cfg.cfUrl;
+  cfg.crUrl = data.cr_url || cfg.crUrl;
+}
+
+async function checkSession() {
+  const stored = localStorage.getItem(SESSION_KEY);
+  if (!stored) return false;
+  try {
+    const s = JSON.parse(stored);
+    if (Date.now() > s.exp) return false;
+    if (s.role !== 'admin') return false;
+    await fetchUploadCredentials(s.token);
+    return true;
+  } catch { return false; }
+}
+
+document.getElementById('loginPass').addEventListener('keydown', e => {
+  if (e.key === 'Enter') doLogin();
+});
 
 // ── State ──
 const STORAGE_KEY = 'dozer.upload.v1';
@@ -368,13 +478,8 @@ function loadCfg() {
 function saveCfg() {
   cfg.cfUrl = document.getElementById('cfUrl').value.trim() || DEFAULTS.cfUrl;
   cfg.crUrl = document.getElementById('crUrl').value.trim() || DEFAULTS.crUrl;
-  cfg.apiKey = document.getElementById('apiKey').value.trim() || DEFAULTS.apiKey;
   cfg.submitterName = document.getElementById('submitterName').value;
   cfg.submitterEmail = document.getElementById('submitterEmail').value;
-  cfg.costCut = document.getElementById('costCut').value;
-  cfg.costFill = document.getElementById('costFill').value;
-  cfg.costLime = document.getElementById('costLime').value;
-  cfg.costStrip = document.getElementById('costStrip').value;
   localStorage.setItem(STORAGE_KEY, JSON.stringify(cfg));
   showToast('✓ Settings saved');
 }
@@ -382,12 +487,14 @@ function saveCfg() {
 function applyCfg() {
   document.getElementById('cfUrl').value = cfg.cfUrl || '';
   document.getElementById('crUrl').value = cfg.crUrl || '';
-  document.getElementById('apiKey').value = cfg.apiKey || '';
   document.getElementById('submitterName').value = cfg.submitterName || '';
   document.getElementById('submitterEmail').value = cfg.submitterEmail || '';
-  ['costCut','costFill','costLime','costStrip'].forEach(k => {
-    if (cfg[k]) document.getElementById(k).value = cfg[k];
-  });
+}
+
+function signOut() {
+  localStorage.removeItem(SESSION_KEY);
+  cfg.apiKey = '';
+  location.reload();
 }
 
 // ── Drag-drop ──
@@ -488,11 +595,6 @@ async function processFile(item) {
     // 3. Trigger pipeline
     item.status = 'triggering'; renderQueue();
     const gcsPath = `gs://${cfData.bucket}/${item.sanitizedName}`;
-    const unitCosts = {};
-    if (cfg.costCut)   unitCosts.cost_cut_bcy   = parseFloat(cfg.costCut);
-    if (cfg.costFill)  unitCosts.cost_fill_ccy  = parseFloat(cfg.costFill);
-    if (cfg.costLime)  unitCosts.cost_lime_sy   = parseFloat(cfg.costLime);
-    if (cfg.costStrip) unitCosts.cost_strip_sy  = parseFloat(cfg.costStrip);
 
     const crRes = await fetch(`${cfg.crUrl}/run-pipeline`, {
       method: 'POST',
@@ -504,7 +606,7 @@ async function processFile(item) {
         gcs_path: gcsPath,
         submitter_name: cfg.submitterName || '',
         submitter_email: cfg.submitterEmail || '',
-        unit_costs: unitCosts,
+        unit_costs: {},
       }),
     });
     if (!crRes.ok) throw new Error(`pipeline HTTP ${crRes.status}`);
@@ -545,7 +647,15 @@ function showToast(msg) {
 }
 
 // ── Init ──
-applyCfg();
+(async () => {
+  applyCfg();
+  const ok = await checkSession();
+  if (ok) {
+    document.getElementById('loginOverlay').style.display = 'none';
+  } else {
+    document.getElementById('loginUser').focus();
+  }
+})();
 </script>
 </body>
 </html>
