@@ -312,7 +312,7 @@
         <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
       </div>
       <div class="big">Drop a geotech PDF here</div>
-      <div class="sub">or click to choose · max 50 MB</div>
+      <div class="sub">or click to choose · max 250 MB</div>
       <input type="file" id="fileInput" accept="application/pdf" multiple>
     </div>
   </div>
@@ -416,8 +416,8 @@ function handleFiles(files) {
       showToast(`✗ ${f.name}: not a PDF`);
       continue;
     }
-    if (f.size > 50 * 1024 * 1024) {
-      showToast(`✗ ${f.name}: over 50 MB`);
+    if (f.size > 250 * 1024 * 1024) {
+      showToast(`✗ ${f.name}: over 250 MB`);
       continue;
     }
     queueFile(f);
